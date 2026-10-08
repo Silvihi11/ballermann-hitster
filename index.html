@@ -165,244 +165,79 @@
 <script>
 // ===== 200+ BALLERMANN-SONGS =====
 const SONGS = [
-  // =====================================================
-  // Klassiker / 1990er bis Mitte 2000er
-  // =====================================================
-
+  // Mega-Klassiker (100% sicher verfügbar)
   {title:"Anton aus Tirol", artist:"DJ Ötzi", year:1999},
-  {title:"Zehn nackte Friseusen", artist:"Mickie Krause", year:1999},
-  {title:"Die Hände zum Himmel", artist:"Die Kolibris", year:1999},
-  {title:"Wieder alles im Griff", artist:"Jürgen Drews", year:1999},
-  {title:"Der Zipfel", artist:"DJ Mox", year:1999},
-  {title:"Saufen", artist:"Die Schröders", year:1999},
-  {title:"Drei weiße Tauben", artist:"EAV", year:1999},
-  {title:"Schifahr'n ist schön", artist:"Zillertaler Schürzenjäger", year:1999},
-  {title:"Über den Wolken", artist:"Dieter Thomas Kuhn", year:1999},
-  {title:"Hal-le-lu-ja", artist:"Die Klostertaler", year:1999},
-
-  {title:"Lebt denn der alte Holzmichl noch", artist:"De Randfichten", year:2004},
   {title:"Viva Colonia", artist:"Höhner", year:2003},
-  {title:"Oberammergau", artist:"Peter Wackel", year:2004},
-  {title:"König der Berge", artist:"DJ Charly", year:2004},
-  {title:"Natascha vorm Pascha", artist:"BB Jürgen", year:2004},
-  {title:"Born to Party", artist:"Markus Becker", year:2004},
-  {title:"Das Hüttenlied", artist:"Scharmöhre", year:2004},
-  {title:"De lustigen Holzhackerleit", artist:"De Randfichten", year:2004},
-
-  // =====================================================
-  // 2006 - 2010
-  // =====================================================
-
+  {title:"Über den Wolken", artist:"Dieter Thomas Kuhn", year:1999},
+  
+  // 2007-2008
   {title:"Finger im Po, Mexiko", artist:"Mickie Krause", year:2007},
   {title:"Das rote Pferd", artist:"Markus Becker, Mallorca Cowboys", year:2007},
-  {title:"Joana", artist:"Peter Wackel, Chriss Tuxi", year:2007},
-  {title:"Banane, Zitrone", artist:"Tobee", year:2007},
-  {title:"Heimweh nach der Insel", artist:"Peter Wackel", year:2007},
-  {title:"Sie liebt den DJ", artist:"Michael Wendler", year:2007},
-  {title:"Jan Pillemann Otze", artist:"Mickie Krause", year:2008},
-  {title:"Immer wenn ich traurig bin", artist:"Jürgen Milski", year:2008},
-  {title:"Hörst du die Regenwürmer husten", artist:"Markus Becker", year:2008},
-  {title:"Allee Allee", artist:"Tim Toupet", year:2008},
-  {title:"Bierkönig Nächte sind lang", artist:"Chriss Tuxi", year:2008},
-  {title:"Orange trägt nur die Müllabfuhr", artist:"Mickie Krause", year:2008},
   {title:"Westerland", artist:"Tobee", year:2008},
   {title:"Amsterdam", artist:"Axel Fischer", year:2008},
   {title:"Auf Mallorca ist's am besten", artist:"Peter Wackel", year:2008},
-  {title:"Ich bin solo", artist:"Mickie Krause", year:2009},
-  {title:"Unterhosenparty", artist:"Tim Toupet", year:2009},
-  {title:"Es gibt nur ein Gas - Vollgas", artist:"Peter Wackel", year:2010},
-  {title:"Wau Wau, geile Sau", artist:"Mickie Krause, Stefan Tanz", year:2010},
-
-  // =====================================================
-  // 2011 - 2015
-  // =====================================================
-
+  
+  // 2011-2012
   {title:"Schatzi, schenk mir ein Foto", artist:"Mickie Krause", year:2011},
   {title:"Helikopter", artist:"Markus Becker", year:2011},
   {title:"Bye Bye Belinda", artist:"Peter Wackel", year:2011},
-  {title:"Una Cerveza por favor", artist:"PS Alex", year:2011},
-  {title:"Vater Abraham", artist:"Tim Toupet", year:2011},
-  {title:"Wenn die Wunderkerzen brennen", artist:"Jürgen Drews", year:2011},
-  {title:"Der DJ aus den Bergen", artist:"DJ Ötzi", year:2011},
-
   {title:"Nur noch Schuhe an", artist:"Mickie Krause", year:2012},
-  {title:"Ich bin kein Model und kein Superstar", artist:"Ole ohne Kohle", year:2012},
-  {title:"Da sprach der Scheich zum Emir", artist:"Tim Toupet", year:2012},
-  {title:"Für einen Tag", artist:"Jürgen Drews", year:2012},
-  {title:"Alt wie ein Baum", artist:"Peter Wackel", year:2012},
   {title:"Sex mit dir Carmen", artist:"Lorenz Büffel, Ikke Hüftgold", year:2012},
-
+  
+  // 2013-2015
   {title:"Scheiss drauf! (Mallorca ist nur einmal im Jahr)", artist:"Peter Wackel", year:2013},
-  {title:"Wir machen durch", artist:"Buddy", year:2013},
   {title:"Knackarsch", artist:"Tim Toupet", year:2013},
-  {title:"Tinnitus", artist:"Mickie Krause", year:2013},
-
   {title:"Orca vor Mallorca", artist:"Tobee", year:2014},
   {title:"Olé, ich freu mich drauf", artist:"Jürgen Drews", year:2014},
   {title:"Wir sind jedes Jahr auf Malle", artist:"Mickie Krause", year:2014},
-  {title:"Kokosnuss", artist:"Stefan Stürmer", year:2014},
-  {title:"Das Glück liegt auf der Straße", artist:"Mickie Krause", year:2014},
-  {title:"Schaschlikbud", artist:"Tim Toupet", year:2014},
-  {title:"Wir retten die Welt", artist:"Mia Julia", year:2014},
-
   {title:"Biste braun, kriegste Fraun", artist:"Mickie Krause", year:2015},
   {title:"Wir wollen doch nur feiern", artist:"Peter Wackel", year:2015},
-  {title:"Radler ist kein Alkohol", artist:"Rick Arena", year:2015},
-  {title:"Wir sind auf Mallorca", artist:"Axel Fischer", year:2015},
-  {title:"Mallorca, da bin ich daheim", artist:"Mia Julia", year:2015},
-  {title:"Wenn ich wieder nüchtern bin", artist:"Ikke Hüftgold", year:2015},
   {title:"Jetzt ist der Teufel los", artist:"Tobee", year:2015},
-
-  // =====================================================
-  // 2016
-  // =====================================================
-
-  {title:"Finger weg von Sachen ohne Alkohol", artist:"Mickie Krause", year:2016},
+  
+  // 2016-2017
   {title:"Aua im Kopf", artist:"Tobee", year:2016},
   {title:"Endlich wieder Alkohol", artist:"Peter Wackel", year:2016},
   {title:"Wir sind Mallorca", artist:"Mia Julia, Ikke Hüftgold", year:2016},
   {title:"Malle ist die geilste Galaxie", artist:"Stefan Stürmer", year:2016},
-  {title:"Geile Zeit", artist:"Mia Julia", year:2016},
-
-  // =====================================================
-  // 2017
-  // =====================================================
-
   {title:"Einhorn", artist:"Mickie Krause", year:2017},
   {title:"Endlich wieder Malle", artist:"Mia Julia", year:2017},
-  {title:"Abriss Charlie", artist:"Lorenz Büffel", year:2017},
-  {title:"Hallo Helmut", artist:"Honk!", year:2017},
-  {title:"Wir sind alle gestört aber geil", artist:"Tim Toupet", year:2017},
-  {title:"Wir sind Mallorca Ultras", artist:"Stefan Stürmer", year:2017},
   {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2017},
-
-  // =====================================================
-  // 2018
-  // =====================================================
-
+  {title:"Hallo Helmut", artist:"Honk!", year:2017},
+  
+  // 2018-2019
   {title:"Mama Laudaaa", artist:"Almklausi, Specktakel", year:2018},
   {title:"I Love Malle", artist:"Peter Wackel", year:2018},
   {title:"Helikopter 117 (Mach den Hub Hub Hub)", artist:"Tobee", year:2018},
   {title:"Inselverbot", artist:"Tim Toupet", year:2018},
-  {title:"Wir sind Malle", artist:"Stefan Stürmer", year:2018},
-  {title:"Schon wieder besoffen", artist:"Ikke Hüftgold, Ingo ohne Flamingo", year:2018},
-  {title:"Wochenende, Saufen, Geil", artist:"Honk!", year:2018},
-  {title:"Saufen, morgens, mittags, abends", artist:"Ingo ohne Flamingo", year:2018},
-  {title:"Der Beat zum Springen", artist:"Mia Julia", year:2018},
-  {title:"Malle DNA", artist:"Rick Arena", year:2018},
-
-  // =====================================================
-  // 2019
-  // =====================================================
-
   {title:"Eine Woche wach", artist:"Mickie Krause", year:2019},
   {title:"Boom Boom", artist:"Peter Wackel", year:2019},
   {title:"Saufi Saufi", artist:"Tobee", year:2019},
   {title:"Bierkapitän", artist:"Markus Becker", year:2019},
   {title:"Anna-Lena", artist:"Honk!", year:2019},
-  {title:"Cocktail", artist:"Ingo ohne Flamingo", year:2019},
-  {title:"Saufen ist wie trinken", artist:"Specktakel", year:2019},
-  {title:"Oh le le (Wochenende geil)", artist:"Tobee", year:2019},
-
-  // =====================================================
-  // 2020
-  // =====================================================
-
+  
+  // 2020-2021
   {title:"10 Liter Bier", artist:"Mickie Krause", year:2020},
   {title:"Doppelhorn", artist:"Lorenz Büffel", year:2020},
-  {title:"Ballerina", artist:"Honk!, Isi Glück", year:2020},
-  {title:"Bierpolizei", artist:"Frenzy, Sabbotage", year:2020},
-  {title:"Adilettenstyle", artist:"Specktakel", year:2020},
-
-  // =====================================================
-  // 2021
-  // =====================================================
-
   {title:"Bier Bauch Baby", artist:"Lorenz Büffel", year:2021},
   {title:"Ab zur Tanke", artist:"Frenzy", year:2021},
-  {title:"Saufen", artist:"Sabbotage", year:2021},
-  {title:"Voll wie der Strand", artist:"DJ Nello, CJmitBrille", year:2021},
-  {title:"Hey Bobby (Richtig einen brennen)", artist:"Tobee", year:2021},
-  {title:"Für immer auf Mallorca", artist:"Isi Glück, Julian Benz", year:2021},
-  {title:"Hier am Ballermann", artist:"Nancy Franck", year:2021},
-  {title:"Partymarathon", artist:"Marry", year:2021},
-  {title:"Pegelstufe 10", artist:"Ikke Hüftgold, Julian Benz", year:2021},
-
-  // =====================================================
-  // 2022
-  // =====================================================
-
+  
+  // 2022-2023
   {title:"Layla", artist:"DJ Robin, Schürze", year:2022},
   {title:"Dicht im Flieger", artist:"Julian Sommer", year:2022},
   {title:"Trinken ist auch Sport", artist:"Lorenz Büffel, Knossi", year:2022},
   {title:"Der Zug hat keine Bremse", artist:"Mia Julia, Lorenz Büffel, Malle Anja", year:2022},
   {title:"Morgen kickt der Kater", artist:"Julian Sommer", year:2022},
-  {title:"Bierpong", artist:"Tobee", year:2022},
-  {title:"Es regnet Bier", artist:"Peter Wackel", year:2022},
-  {title:"Welcome to Mallorca", artist:"Frenzy", year:2022},
-  {title:"Olivia", artist:"Die Zipfelbuben", year:2022},
-
-  // =====================================================
-  // 2023
-  // =====================================================
-
   {title:"Nie mehr Alkohol - freie Getränke", artist:"Mickie Krause", year:2023},
   {title:"Peter Pan", artist:"Julian Sommer, Mia Julia", year:2023},
   {title:"100 Liter Bier", artist:"Lorenz Büffel", year:2023},
-  {title:"Bumsbar", artist:"Ikke Hüftgold, Schürze, DJ Robin", year:2023},
   {title:"Inselfieber", artist:"Peter Wackel", year:2023},
-  {title:"Wir heben ab", artist:"Mia Julia", year:2023},
-  {title:"Ich schieß mich weg", artist:"Isi Glück, Micha von der Rampe", year:2023},
-  {title:"Mallorca mein Zuhause", artist:"Mia Julia, Rumbombe", year:2023},
-  {title:"Heisser Sand", artist:"Julian Sommer", year:2023},
-  {title:"Orgeln", artist:"Pazoo, Frenzy", year:2023},
-
-  // =====================================================
-  // 2024
-  // =====================================================
-
+  
+  // 2024-2025
   {title:"Handwerker", artist:"Mickie Krause, Julian Sommer", year:2024},
-  {title:"Malle bereit", artist:"Mia Julia, MAKZ 38, MartinBepunkt", year:2024},
-  {title:"Mallebird", artist:"Ikke Hüftgold, Julian Benz, Lyzar", year:2024},
   {title:"Oben ohne", artist:"Julian Sommer", year:2024},
-  {title:"Mallearen", artist:"Isi Glück", year:2024},
-  {title:"Midnight Lady", artist:"Lorenz Büffel, Knossi", year:2024},
-  {title:"Lampen an", artist:"Frenzy", year:2024},
-  {title:"Ameise", artist:"Frenzy, Rumbombe", year:2024},
-  {title:"Mozart (Ciao Niveau)", artist:"Tobee", year:2024},
-  {title:"Malle Malle", artist:"Frenzy", year:2024},
-
-  // =====================================================
-  // 2025
-  // =====================================================
-
   {title:"SOS", artist:"Julian Sommer", year:2025},
-  {title:"Wackelkontakt", artist:"Oimara", year:2025},
   {title:"Pferdeschwanz", artist:"Lorenz Büffel", year:2025},
-  {title:"Imperator", artist:"Ikke Hüftgold", year:2025},
-  {title:"Bax Banni", artist:"Isi Glück, Julian Sommer", year:2025},
-  {title:"Das Alles ist Malle", artist:"Marc Eggers, Knossi", year:2025},
-  {title:"PARTYRADIKAL", artist:"Mia Julia, NOISETIME, Stevio", year:2025},
   {title:"2 Alkohol", artist:"Mickie Krause, Marc Eggers", year:2025},
-  {title:"Eine Nacht in Arenal", artist:"Julian Sommer, Frenzy", year:2025},
-  {title:"Daydrinking (Für mich bedeutet Freiheit)", artist:"Tobee", year:2025},
-
-  // =====================================================
-  // 2026 - Neue Hits
-  // =====================================================
-
-  {title:"3 x KO", artist:"Julian Sommer, Frenzy, Calvin Kleinen", year:2026},
-  {title:"Malle Maus", artist:"Breitner, Calvin Kleinen", year:2026},
-  {title:"Party an der Playa", artist:"Frenzy, CubaAusLibre", year:2026},
-  {title:"NACHTRINKEN", artist:"Ikke Hüftgold", year:2026},
-  {title:"Dachdecker", artist:"Julian Sommer", year:2026},
-  {title:"Scheißegal", artist:"Frenzy, Isi Glück", year:2026},
-  {title:"10 von 10", artist:"Julian Benz", year:2026},
-  {title:"Hier kommt der Büffelmann", artist:"Lorenz Büffel", year:2026},
-  {title:"Endlich normale Leute", artist:"Julian Sommer, Chris Tall", year:2026},
-  {title:"WENN ICH NÜCHTERN WÄR", artist:"Julian Sommer, Luca-Dante Spadafora", year:2026},
-  {title:"Mon Amour (So lang ich noch Luft in meiner Lunge hab) - Party Version", artist:"Tobee", year:2026},
-  {title:"Sonne, Mond & Playa", artist:"Isi Glück", year:2026},
 ];
 
 let players = [], winTarget = 10, deck = [], currentTurn = 0, pendingSong = null, pendingIndex = null;
