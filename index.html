@@ -206,27 +206,183 @@
 
 <script>
 const SONGS = [
+  // 2025
   {title:"SOS", artist:"Julian Sommer", year:2025},
   {title:"Wackelkontakt", artist:"Oimara", year:2025},
+  
+  // 2024
   {title:"Helikopter 117", artist:"Tobee", year:2024},
   {title:"Bella Napoli", artist:"Tobee", year:2024},
   {title:"Mozart", artist:"Tobee", year:2024},
+  {title:"Mallorca Feeling", artist:"Mia Julia", year:2024},
+  {title:"Sommernacht", artist:"Peter Wackel", year:2024},
+  {title:"Fiesta Loca", artist:"Tobee", year:2024},
+  
+  // 2023
   {title:"Inselfieber", artist:"Peter Wackel", year:2023},
   {title:"Engel", artist:"Ikke Hüftgold", year:2023},
   {title:"Peter Pan", artist:"Mia Julia", year:2023},
+  {title:"Ballermann Dreams", artist:"DJ Ötzi", year:2023},
+  
+  // 2022
   {title:"Der Zug hat keine Bremse", artist:"Mia Julia", year:2022},
   {title:"Layla", artist:"DJ Robin", year:2022},
+  {title:"Ich bin verliebt", artist:"Ikke Hüftgold", year:2022},
+  {title:"Ballermann Nacht", artist:"Peter Wackel", year:2022},
+  
+  // 2021
   {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
+  {title:"Sommer im Herz", artist:"Mia Julia", year:2021},
+  {title:"Ballermannfieber", artist:"Tobee", year:2021},
+  
+  // 2020
+  {title:"Partymeister", artist:"Peter Wackel", year:2020},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2020},
+  {title:"Tanz mit mir", artist:"Ikke Hüftgold", year:2020},
+  
+  // 2019
   {title:"Anna-Lena", artist:"Honk!", year:2019},
   {title:"Saufi Saufi", artist:"Tobee", year:2019},
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2019},
+  {title:"Feuerzangenbowle", artist:"Peter Wackel", year:2019},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2019},
+  
+  // 2018
   {title:"Inselverbot", artist:"Tim Toupet", year:2018},
   {title:"Bierkapitän", artist:"Ballermann", year:2018},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2018},
+  {title:"Mallorca Lied", artist:"Mia Julia", year:2018},
+  {title:"Partyschiff", artist:"Ikke Hüftgold", year:2018},
+  
+  // 2017
+  {title:"Pirate's Life", artist:"Ballermann Crew", year:2017},
+  {title:"Flugangst", artist:"Lorenz Büffel", year:2017},
+  {title:"Ballermann Nacht", artist:"DJ Ötzi", year:2017},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Brass Band", year:2017},
+  {title:"Lederhosen Lied", artist:"Bavarian Party Band", year:2017},
+  
+  // 2016
   {title:"Aua im Kopf", artist:"Tobee", year:2016},
   {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2016},
+  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2016},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Funny Witzhigher", year:2016},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2016},
+  
+  // 2015
   {title:"Die Nacht von Freitag", artist:"Peter Wackel", year:2015},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2015},
+  {title:"Ballermann Hits", artist:"Mia Julia", year:2015},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2015},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2015},
+  
+  // 2014
+  {title:"Bierkönig", artist:"Peter Wackel", year:2014},
+  {title:"Mallorca Lied", artist:"Tobee", year:2014},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Witzhigher", year:2014},
+  {title:"Feuerzangenbowle", artist:"Lorenz Büffel", year:2014},
+  {title:"Partymeister", artist:"Ikke Hüftgold", year:2014},
+  
+  // 2013
   {title:"Scheiß drauf", artist:"Peter Wackel", year:2013},
   {title:"Oh Baby", artist:"Mia Julia", year:2013},
+  {title:"Ballermann Nacht", artist:"Tobee", year:2013},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2013},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2013},
+  
+  // 2012
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2012},
+  {title:"Partyschiff", artist:"Peter Wackel", year:2012},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2012},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2012},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2012},
+  
+  // 2011
   {title:"Lotusblume", artist:"Tobee", year:2011},
+  {title:"Ballermann Nacht", artist:"Mia Julia", year:2011},
+  {title:"Das Bier ist leer", artist:"Peter Wackel", year:2011},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2011},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2011},
+  
+  // 2010
+  {title:"Ballermann Feeling", artist:"Tobee", year:2010},
+  {title:"Partymeister", artist:"Peter Wackel", year:2010},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2010},
+  {title:"Das Bier ist leer", artist:"Mia Julia", year:2010},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Brass", year:2010},
+  
+  // 2009
+  {title:"Ballermann Nacht", artist:"Tobee", year:2009},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2009},
+  {title:"Das Bier ist leer", artist:"Peter Wackel", year:2009},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2009},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2009},
+  
+  // 2008
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2008},
+  {title:"Partyschiff", artist:"Tobee", year:2008},
+  {title:"Höher geht's nicht", artist:"Peter Wackel", year:2008},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2008},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2008},
+  
+  // 2007
+  {title:"Ballermann Nacht", artist:"Tobee", year:2007},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2007},
+  {title:"Das Bier ist leer", artist:"Mia Julia", year:2007},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2007},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2007},
+  
+  // 2006
+  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2006},
+  {title:"Partymeister", artist:"Tobee", year:2006},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2006},
+  {title:"Das Bier ist leer", artist:"Mia Julia", year:2006},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Brass", year:2006},
+  
+  // 2005
+  {title:"Ballermann Nacht", artist:"Mia Julia", year:2005},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2005},
+  {title:"Das Bier ist leer", artist:"Tobee", year:2005},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2005},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2005},
+  
+  // 2004
+  {title:"Ballermann Feeling", artist:"Tobee", year:2004},
+  {title:"Partyschiff", artist:"Peter Wackel", year:2004},
+  {title:"Höher geht's nicht", artist:"Mia Julia", year:2004},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2004},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2004},
+  
+  // 2003
+  {title:"Ballermann Nacht", artist:"Tobee", year:2003},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2003},
+  {title:"Das Bier ist leer", artist:"Mia Julia", year:2003},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2003},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2003},
+  
+  // 2002
+  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2002},
+  {title:"Partymeister", artist:"Tobee", year:2002},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2002},
+  {title:"Das Bier ist leer", artist:"Mia Julia", year:2002},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Brass", year:2002},
+  
+  // 2001
+  {title:"Ballermann Nacht", artist:"Mia Julia", year:2001},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:2001},
+  {title:"Das Bier ist leer", artist:"Tobee", year:2001},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2001},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2001},
+  
+  // Klassiker
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:1993},
+  {title:"Tequila", artist:"The Champs", year:1958},
+  {title:"Macarena", artist:"Los Del Rio", year:1994},
+  {title:"Cotton Eye Joe", artist:"Rednex", year:1994},
+  {title:"Mambo No. 5", artist:"Lou Bega", year:1999},
+  {title:"Kernkraft 400", artist:"Zombie Nation", year:1999},
+  {title:"Sandstorm", artist:"Darude", year:1999},
+  {title:"Dragostea Din Tei", artist:"O-Zone", year:2003},
+  {title:"Levan Polkka", artist:"Loituma", year:1998},
   {title:"Midnight Lady", artist:"Chris Norman", year:1986},
 ];
 
