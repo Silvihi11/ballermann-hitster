@@ -94,7 +94,7 @@
 <body>
 
 <h1>🎉 Ballermann-Hitster</h1>
-<div class="subtitle">100+ Songs · iTunes-Preview · Mit Klau-Funktion & Multiplayer</div>
+<div class="subtitle">200+ Songs · iTunes-Preview · Mit Klau-Funktion</div>
 
 <div id="setup">
   <div class="panel">
@@ -106,12 +106,6 @@
     <h3>Einstellungen</h3>
     <label>Karten zum Sieg</label>
     <input type="number" id="winTarget" value="10" min="3" max="100">
-  </div>
-  <div class="panel">
-    <label style="display:flex; align-items:center; gap:8px; font-weight:normal; margin-bottom:0;">
-      <input type="checkbox" id="multiplayerToggle" style="width:auto; margin:0;">
-      Mit anderen Handys spielen
-    </label>
   </div>
   <div style="text-align:center;">
     <button id="startBtn">Spiel starten</button>
@@ -166,12 +160,11 @@
   <button id="restartBtn">🔁 Neues Spiel</button>
 </div>
 
-<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">🎉 Ballermann-Hitster · 100+ Songs · Prost! 🍻</footer>
+<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">🎉 Ballermann-Hitster · 200+ Songs · Prost! 🍻</footer>
 
 <script>
-// ===== 100+ BALLERMANN-SONGS =====
-const songs = [
-
+// ===== 200+ BALLERMANN-SONGS =====
+const SONGS = [
   // =====================================================
   // Klassiker / 1990er bis Mitte 2000er
   // =====================================================
@@ -409,13 +402,11 @@ const songs = [
   {title:"Endlich normale Leute", artist:"Julian Sommer, Chris Tall", year:2026},
   {title:"WENN ICH NÜCHTERN WÄR", artist:"Julian Sommer, Luca-Dante Spadafora", year:2026},
   {title:"Mon Amour (So lang ich noch Luft in meiner Lunge hab) - Party Version", artist:"Tobee", year:2026},
-  {title:"Sonne, Mond & Playa", artist:"Isi Glück", year:2026}
-
+  {title:"Sonne, Mond & Playa", artist:"Isi Glück", year:2026},
 ];
 
 let players = [], winTarget = 10, deck = [], currentTurn = 0, pendingSong = null, pendingIndex = null;
 let stealMode = false, stealingPlayerIndex = null, stealPendingIndex = null;
-let gameMode = 'local', roomCode = null, myPlayerIndex = null;
 
 const playerInputs = document.getElementById('playerInputs');
 function addPlayerRow(name) {
@@ -445,33 +436,16 @@ document.getElementById('startBtn').onclick = () => {
   winTarget = Math.min(parseInt(document.getElementById('winTarget').value) || 10, SONGS.length);
   deck = shuffle([...SONGS]);
   currentTurn = 0;
-  myPlayerIndex = 0;
   players.forEach(p => { if (deck.length > 0) p.timeline.push(deck.pop()); });
-  
-  if (document.getElementById('multiplayerToggle').checked) {
-    gameMode = 'host';
-    roomCode = generateRoomCode();
-  } else {
-    gameMode = 'local';
-  }
   
   document.getElementById('setup').classList.add('hidden-section');
   document.getElementById('game').classList.remove('hidden-section');
-  
-  if (gameMode === 'host') {
-    document.getElementById('roleBanner').textContent = '🎮 Haupt-Handy · Code: ' + roomCode;
-  } else {
-    document.getElementById('roleBanner').textContent = '📱 Einzelspiel-Modus';
-  }
+  document.getElementById('roleBanner').textContent = '📱 Spiel läuft!';
   
   renderScoreboard();
   renderTimeline();
   updateDeckCount();
 };
-
-function generateRoomCode() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
 
 function shuffle(arr) {
   const a = [...arr];
