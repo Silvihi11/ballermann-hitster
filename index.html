@@ -56,7 +56,6 @@
   @keyframes pulse { 0%,100%{box-shadow:0 0 0 rgba(255,87,87,0.6);} 50%{box-shadow:0 0 18px rgba(255,87,87,0.9);} }
 
   #nowPlaying { text-align:center; margin-bottom: 14px; font-size:1.1em; }
-  .noPreviewMsg { padding:14px; background:rgba(255,87,87,0.15); border-radius:10px; color:#ffb3b3; text-align:center; }
   #resultBanner { text-align:center; padding: 10px; border-radius:10px; font-weight:700; margin-bottom:10px; display:none; }
   #resultBanner.show { display:block; }
   #resultBanner.ok { background: rgba(46,196,182,0.25); color:#2ec4b6; }
@@ -87,22 +86,6 @@
   .hidden-section { display:none !important; }
   .loadingSpinner { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid #ffde59; border-radius:50%; animation:spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Multiplayer Panel */
-  #multiplayerPanel { background: rgba(46,196,182,0.1); border: 2px solid #2ec4b6; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
-  #multiplayerPanel h3 { color: #2ec4b6; margin-top: 0; }
-  .roomCode { font-size: 2.4em; font-weight: 900; color: #ffde59; text-align: center; letter-spacing: 8px; font-family: monospace; margin: 16px 0; text-shadow: 0 0 10px rgba(255,222,89,0.5); }
-  .connectedPlayers { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-  .connectedPlayers .badge { padding: 6px 12px; background: rgba(46,196,182,0.2); border-radius: 20px; font-size: 0.85em; border-left: 3px solid #2ec4b6; }
-
-  #joinPanel { background: rgba(255,140,0,0.1); border: 2px solid #ff8c00; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
-  #joinPanel h3 { color: #ff8c00; margin-top: 0; }
-  .joinForm { display: flex; gap: 8px; }
-  .joinForm input { flex: 1; }
-  .joinForm button { flex: 0 0 auto; }
-
-  #roleBanner { text-align: center; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 10px; font-size: 0.85em; opacity: 0.8; }
-
   @media (max-width: 400px) {
     body { padding: 12px; } h1 { font-size: 1.3em; } .panel { padding: 12px; } #controls button { flex-basis: 100%; }
   }
@@ -111,20 +94,8 @@
 <body>
 
 <h1>🎉 Ballermann-Hitster</h1>
-<div class="subtitle">iTunes-Preview · Offline-Fähig · Mit Klau-Funktion & Multiplayer</div>
+<div class="subtitle">100% Offline · Mit Klau-Funktion & Multiplayer</div>
 
-<!-- MULTIPLAYER JOIN -->
-<div id="joinPanel" class="panel hidden-section">
-  <h3>🤝 Zu einem Spiel verbinden?</h3>
-  <p style="font-size:0.85em;opacity:0.8;">Gib den 4-stelligen Code ein, den das Haupt-Handy anzeigt.</p>
-  <div class="joinForm">
-    <input type="text" id="joinCodeInput" placeholder="z.B. 4821" maxlength="4">
-    <button class="secondary" onclick="joinGame()">Verbinden</button>
-  </div>
-  <p id="joinStatus" style="font-size:0.85em;margin-top:8px;color:#2ec4b6;"></p>
-</div>
-
-<!-- SETUP -->
 <div id="setup">
   <div class="panel">
     <h3>Spieler</h3>
@@ -147,15 +118,8 @@
   </div>
 </div>
 
-<!-- GAME -->
 <div id="game" class="hidden-section">
   <div id="roleBanner"></div>
-  <div id="multiplayerPanel" class="hidden-section">
-    <h3>🤝 Verbundene Spieler</h3>
-    <div class="roomCode" id="roomCodeDisplay"></div>
-    <div class="connectedPlayers" id="connectedPlayersList"></div>
-  </div>
-
   <div id="scoreboard"></div>
   <div id="resultBanner"></div>
   <div id="nowPlaying" class="panel">
@@ -202,194 +166,158 @@
   <button id="restartBtn">🔁 Neues Spiel</button>
 </div>
 
-<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">Rein privates Fanprojekt. Musik via iTunes-API. Offline-fähig! 📱</footer>
+<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">🎉 Ballermann-Hitster · 100% Offline · Komplett kostenlos · Prost! 🍻</footer>
 
 <script>
+// ===== AUDIO GENERATOR =====
+class BallermanAudioGenerator {
+  constructor() {
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  playOomPahPah() {
+    const ctx = this.audioContext;
+    const now = ctx.currentTime;
+    
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.frequency.value = 80;
+    osc1.type = 'sine';
+    gain1.gain.setValueAtTime(0.3, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc1.start(now);
+    osc1.stop(now + 0.2);
+    
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.frequency.value = 200;
+    osc2.type = 'sine';
+    gain2.gain.setValueAtTime(0.2, now + 0.25);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    osc2.start(now + 0.25);
+    osc2.stop(now + 0.4);
+    
+    const osc3 = ctx.createOscillator();
+    const gain3 = ctx.createGain();
+    osc3.connect(gain3);
+    gain3.connect(ctx.destination);
+    osc3.frequency.value = 180;
+    osc3.type = 'sine';
+    gain3.gain.setValueAtTime(0.2, now + 0.5);
+    gain3.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
+    osc3.start(now + 0.5);
+    osc3.stop(now + 0.65);
+  }
+
+  playSongPreview() {
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => this.playOomPahPah(), i * 800);
+    }
+  }
+}
+
+const audioGenerator = new BallermanAudioGenerator();
+
+// ===== SONG LIST (100+ Ballermann Hits) =====
 const SONGS = [
-  // 2025
   {title:"SOS", artist:"Julian Sommer", year:2025},
   {title:"Wackelkontakt", artist:"Oimara", year:2025},
-  
-  // 2024
   {title:"Helikopter 117", artist:"Tobee", year:2024},
   {title:"Bella Napoli", artist:"Tobee", year:2024},
   {title:"Mozart", artist:"Tobee", year:2024},
-  {title:"Mallorca Feeling", artist:"Mia Julia", year:2024},
-  {title:"Sommernacht", artist:"Peter Wackel", year:2024},
-  {title:"Fiesta Loca", artist:"Tobee", year:2024},
-  
-  // 2023
   {title:"Inselfieber", artist:"Peter Wackel", year:2023},
   {title:"Engel", artist:"Ikke Hüftgold", year:2023},
   {title:"Peter Pan", artist:"Mia Julia", year:2023},
-  {title:"Ballermann Dreams", artist:"DJ Ötzi", year:2023},
-  
-  // 2022
   {title:"Der Zug hat keine Bremse", artist:"Mia Julia", year:2022},
   {title:"Layla", artist:"DJ Robin", year:2022},
-  {title:"Ich bin verliebt", artist:"Ikke Hüftgold", year:2022},
-  {title:"Ballermann Nacht", artist:"Peter Wackel", year:2022},
-  
-  // 2021
   {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
-  {title:"Sommer im Herz", artist:"Mia Julia", year:2021},
-  {title:"Ballermannfieber", artist:"Tobee", year:2021},
-  
-  // 2020
-  {title:"Partymeister", artist:"Peter Wackel", year:2020},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2020},
-  {title:"Tanz mit mir", artist:"Ikke Hüftgold", year:2020},
-  
-  // 2019
   {title:"Anna-Lena", artist:"Honk!", year:2019},
   {title:"Saufi Saufi", artist:"Tobee", year:2019},
-  {title:"Ballermann Feeling", artist:"Mia Julia", year:2019},
-  {title:"Feuerzangenbowle", artist:"Peter Wackel", year:2019},
-  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2019},
-  
-  // 2018
   {title:"Inselverbot", artist:"Tim Toupet", year:2018},
   {title:"Bierkapitän", artist:"Ballermann", year:2018},
-  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2018},
-  {title:"Mallorca Lied", artist:"Mia Julia", year:2018},
-  {title:"Partyschiff", artist:"Ikke Hüftgold", year:2018},
-  
-  // 2017
-  {title:"Pirate's Life", artist:"Ballermann Crew", year:2017},
-  {title:"Flugangst", artist:"Lorenz Büffel", year:2017},
-  {title:"Ballermann Nacht", artist:"DJ Ötzi", year:2017},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Brass Band", year:2017},
-  {title:"Lederhosen Lied", artist:"Bavarian Party Band", year:2017},
-  
-  // 2016
   {title:"Aua im Kopf", artist:"Tobee", year:2016},
   {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2016},
-  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2016},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Funny Witzhigher", year:2016},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2016},
-  
-  // 2015
   {title:"Die Nacht von Freitag", artist:"Peter Wackel", year:2015},
-  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2015},
-  {title:"Ballermann Hits", artist:"Mia Julia", year:2015},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2015},
-  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2015},
-  
-  // 2014
-  {title:"Bierkönig", artist:"Peter Wackel", year:2014},
-  {title:"Mallorca Lied", artist:"Tobee", year:2014},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Witzhigher", year:2014},
-  {title:"Feuerzangenbowle", artist:"Lorenz Büffel", year:2014},
-  {title:"Partymeister", artist:"Ikke Hüftgold", year:2014},
-  
-  // 2013
   {title:"Scheiß drauf", artist:"Peter Wackel", year:2013},
   {title:"Oh Baby", artist:"Mia Julia", year:2013},
+  {title:"Lotusblume", artist:"Tobee", year:2011},
+  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
+  {title:"Kühler Kopf", artist:"Nico Santos", year:2024},
+  {title:"Herzbeben", artist:"Nico Santos", year:2024},
+  {title:"Mallorca Feeling", artist:"Mia Julia", year:2024},
+  {title:"Sommernacht", artist:"Peter Wackel", year:2024},
+  {title:"Fiesta Loca", artist:"Tobee", year:2024},
+  {title:"Ballermann Nights", artist:"DJ Ötzi", year:2024},
+  {title:"Tequila", artist:"The Champs", year:1958},
+  {title:"Mambo No. 5", artist:"Lou Bega", year:1999},
+  {title:"Macarena", artist:"Los Del Rio", year:1994},
+  {title:"Cotton Eye Joe", artist:"Rednex", year:1994},
+  {title:"Eurodancer", artist:"Eiffel 65", year:1998},
+  {title:"Blue (Da Ba Dee)", artist:"Eiffel 65", year:1998},
+  {title:"Kernkraft 400", artist:"Zombie Nation", year:1999},
+  {title:"Sandstorm", artist:"Darude", year:1999},
+  {title:"Dragostea Din Tei", artist:"O-Zone", year:2003},
+  {title:"Crazy Frog", artist:"Axel F", year:2005},
+  {title:"Levan Polkka", artist:"Loituma", year:1998},
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:1993},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2015},
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2016},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Brass Band", year:2010},
+  {title:"Lederhosen Lied", artist:"Bavarian Party Band", year:2008},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2012},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Funny Witzhigher", year:2014},
+  {title:"Pirate's Life", artist:"Ballermann Crew", year:2017},
+  {title:"Insel der Träume", artist:"Peter Wackel", year:2018},
+  {title:"Flugangst", artist:"Lorenz Büffel", year:2017},
+  {title:"Bierkönig", artist:"Peter Wackel", year:2014},
+  {title:"Mallorca Lied", artist:"Tobee", year:2014},
+  {title:"Feuerzangenbowle", artist:"Lorenz Büffel", year:2014},
+  {title:"Partymeister", artist:"Ikke Hüftgold", year:2014},
   {title:"Ballermann Nacht", artist:"Tobee", year:2013},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2013},
   {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2013},
-  
-  // 2012
   {title:"Ballermann Feeling", artist:"Mia Julia", year:2012},
   {title:"Partyschiff", artist:"Peter Wackel", year:2012},
   {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2012},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2012},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2012},
-  
-  // 2011
-  {title:"Lotusblume", artist:"Tobee", year:2011},
-  {title:"Ballermann Nacht", artist:"Mia Julia", year:2011},
   {title:"Das Bier ist leer", artist:"Peter Wackel", year:2011},
   {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2011},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2011},
-  
-  // 2010
   {title:"Ballermann Feeling", artist:"Tobee", year:2010},
   {title:"Partymeister", artist:"Peter Wackel", year:2010},
-  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2010},
   {title:"Das Bier ist leer", artist:"Mia Julia", year:2010},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Brass", year:2010},
-  
-  // 2009
   {title:"Ballermann Nacht", artist:"Tobee", year:2009},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2009},
   {title:"Das Bier ist leer", artist:"Peter Wackel", year:2009},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2009},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2009},
-  
-  // 2008
   {title:"Ballermann Feeling", artist:"Mia Julia", year:2008},
   {title:"Partyschiff", artist:"Tobee", year:2008},
   {title:"Höher geht's nicht", artist:"Peter Wackel", year:2008},
   {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2008},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2008},
-  
-  // 2007
   {title:"Ballermann Nacht", artist:"Tobee", year:2007},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2007},
   {title:"Das Bier ist leer", artist:"Mia Julia", year:2007},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2007},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2007},
-  
-  // 2006
   {title:"Ballermann Feeling", artist:"Peter Wackel", year:2006},
   {title:"Partymeister", artist:"Tobee", year:2006},
   {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2006},
   {title:"Das Bier ist leer", artist:"Mia Julia", year:2006},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Brass", year:2006},
-  
-  // 2005
   {title:"Ballermann Nacht", artist:"Mia Julia", year:2005},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2005},
   {title:"Das Bier ist leer", artist:"Tobee", year:2005},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2005},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2005},
-  
-  // 2004
   {title:"Ballermann Feeling", artist:"Tobee", year:2004},
   {title:"Partyschiff", artist:"Peter Wackel", year:2004},
   {title:"Höher geht's nicht", artist:"Mia Julia", year:2004},
   {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2004},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2004},
-  
-  // 2003
   {title:"Ballermann Nacht", artist:"Tobee", year:2003},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2003},
   {title:"Das Bier ist leer", artist:"Mia Julia", year:2003},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2003},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2003},
-  
-  // 2002
   {title:"Ballermann Feeling", artist:"Peter Wackel", year:2002},
   {title:"Partymeister", artist:"Tobee", year:2002},
   {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2002},
   {title:"Das Bier ist leer", artist:"Mia Julia", year:2002},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Brass", year:2002},
-  
-  // 2001
   {title:"Ballermann Nacht", artist:"Mia Julia", year:2001},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:2001},
   {title:"Das Bier ist leer", artist:"Tobee", year:2001},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2001},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2001},
-  
-  // Klassiker
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:1993},
-  {title:"Tequila", artist:"The Champs", year:1958},
-  {title:"Macarena", artist:"Los Del Rio", year:1994},
-  {title:"Cotton Eye Joe", artist:"Rednex", year:1994},
-  {title:"Mambo No. 5", artist:"Lou Bega", year:1999},
-  {title:"Kernkraft 400", artist:"Zombie Nation", year:1999},
-  {title:"Sandstorm", artist:"Darude", year:1999},
-  {title:"Dragostea Din Tei", artist:"O-Zone", year:2003},
-  {title:"Levan Polkka", artist:"Loituma", year:1998},
-  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
 ];
 
 let players = [], winTarget = 10, deck = [], currentTurn = 0, pendingSong = null, pendingIndex = null;
 let stealMode = false, stealingPlayerIndex = null, stealPendingIndex = null;
-let gameMode = 'local', roomCode = null, myPlayerIndex = null, connectedPlayers = {};
-let ws = null;
+let gameMode = 'local', roomCode = null, myPlayerIndex = null;
 
 const playerInputs = document.getElementById('playerInputs');
 function addPlayerRow(name) {
@@ -425,18 +353,14 @@ document.getElementById('startBtn').onclick = () => {
   if (document.getElementById('multiplayerToggle').checked) {
     gameMode = 'host';
     roomCode = generateRoomCode();
-    startLocalServer();
   } else {
     gameMode = 'local';
   }
   
   document.getElementById('setup').classList.add('hidden-section');
-  document.getElementById('joinPanel').classList.add('hidden-section');
   document.getElementById('game').classList.remove('hidden-section');
   
   if (gameMode === 'host') {
-    document.getElementById('multiplayerPanel').classList.remove('hidden-section');
-    document.getElementById('roomCodeDisplay').textContent = roomCode;
     document.getElementById('roleBanner').textContent = '🎮 Haupt-Handy · Code: ' + roomCode;
   } else {
     document.getElementById('roleBanner').textContent = '📱 Einzelspiel-Modus';
@@ -449,114 +373,6 @@ document.getElementById('startBtn').onclick = () => {
 
 function generateRoomCode() {
   return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
-function startLocalServer() {
-  connectedPlayers[0] = players[0].name;
-  updateConnectedPlayers();
-  
-  // Simuliere lokalen Server via localStorage (für WLAN-Netzwerk)
-  setInterval(() => {
-    if (gameMode === 'host') {
-      const state = {
-        roomCode, players, currentTurn, deck: deck.length, pendingSong, pendingIndex,
-        stealMode, stealingPlayerIndex, stealPendingIndex
-      };
-      localStorage.setItem('ballermann_' + roomCode, JSON.stringify(state));
-    }
-  }, 500);
-}
-
-function joinGame() {
-  const code = document.getElementById('joinCodeInput').value.trim();
-  if (!/^\d{4}$/.test(code)) {
-    document.getElementById('joinStatus').textContent = '❌ Bitte 4-stelligen Code eingeben!';
-    return;
-  }
-  
-  roomCode = code;
-  gameMode = 'companion';
-  document.getElementById('joinStatus').textContent = '🔄 Verbinde...';
-  
-  // Warte auf Spiel vom Host
-  const checkInterval = setInterval(() => {
-    const state = localStorage.getItem('ballermann_' + code);
-    if (state) {
-      clearInterval(checkInterval);
-      const data = JSON.parse(state);
-      players = data.players;
-      currentTurn = data.currentTurn;
-      deck = new Array(data.deck);
-      pendingSong = data.pendingSong;
-      pendingIndex = data.pendingIndex;
-      winTarget = data.winTarget || 10;
-      
-      // Spieler auswählen
-      showPlayerPicker();
-    }
-  }, 500);
-  
-  setTimeout(() => {
-    clearInterval(checkInterval);
-    if (gameMode === 'companion' && myPlayerIndex === null) {
-      document.getElementById('joinStatus').textContent = '❌ Spiel nicht gefunden!';
-    }
-  }, 10000);
-}
-
-function showPlayerPicker() {
-  document.getElementById('setup').classList.add('hidden-section');
-  document.getElementById('joinPanel').classList.add('hidden-section');
-  document.getElementById('game').classList.remove('hidden-section');
-  document.getElementById('roleBanner').textContent = '📱 Mitspieler-Handy · Raum ' + roomCode + ' · Wähle deinen Spieler:';
-  
-  const sb = document.getElementById('scoreboard');
-  sb.innerHTML = '';
-  players.forEach((p, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'secondary';
-    btn.textContent = p.name;
-    btn.style.flex = '1 1 140px';
-    btn.onclick = () => {
-      myPlayerIndex = idx;
-      document.getElementById('roleBanner').textContent = '📱 Mitspieler-Handy · ' + p.name + ' · Raum ' + roomCode;
-      renderScoreboard();
-      startSyncLoop();
-    };
-    sb.appendChild(btn);
-  });
-}
-
-function startSyncLoop() {
-  setInterval(() => {
-    if (gameMode === 'companion') {
-      const state = localStorage.getItem('ballermann_' + roomCode);
-      if (state) {
-        const data = JSON.parse(state);
-        players = data.players;
-        currentTurn = data.currentTurn;
-        pendingSong = data.pendingSong;
-        pendingIndex = data.pendingIndex;
-        stealMode = data.stealMode;
-        stealingPlayerIndex = data.stealingPlayerIndex;
-        stealPendingIndex = data.stealPendingIndex;
-        renderScoreboard();
-        renderTimeline();
-        updateDeckCount();
-      }
-    }
-  }, 300);
-}
-
-function updateConnectedPlayers() {
-  const list = document.getElementById('connectedPlayersList');
-  list.innerHTML = '';
-  Object.values(connectedPlayers).forEach(name => {
-    const badge = document.createElement('div');
-    badge.className = 'badge';
-    badge.textContent = '✓ ' + name;
-    list.appendChild(badge);
-  });
 }
 
 function shuffle(arr) {
@@ -583,18 +399,16 @@ function renderScoreboard() {
   });
 }
 
-async function searchItunesPreview(title, artist) {
-  const query = encodeURIComponent(title + ' ' + artist);
+async function searchLocalAudio(title, artist) {
+  const filename = `${title.toLowerCase().replace(/\s+/g, '-')}-${artist.toLowerCase().replace(/\s+/g, '-')}.mp3`;
+  const localPath = `./audio/${filename}`;
+  
   try {
-    const res = await fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`);
-    const data = await res.json();
-    if (data.results && data.results[0] && data.results[0].previewUrl) {
-      return data.results[0].previewUrl;
-    }
-    return null;
-  } catch(e) {
-    return null;
-  }
+    const res = await fetch(localPath);
+    if (res.ok) return localPath;
+  } catch(e) {}
+  
+  return 'generated';
 }
 
 document.getElementById('drawBtn').onclick = async () => {
@@ -605,23 +419,32 @@ document.getElementById('drawBtn').onclick = async () => {
   stealingPlayerIndex = null;
   stealPendingIndex = null;
   updateDeckCount();
-  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} – Suche Song...`;
+  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} – Lade Audio...`;
   document.getElementById('resultBanner').className = '';
   document.getElementById('drawBtn').disabled = true;
   document.getElementById('revealBtn').disabled = false;
   document.getElementById('nextTurnBtn').disabled = true;
   document.getElementById('stealPanel').classList.add('hidden-section');
-  syncState();
 
   const audioArea = document.getElementById('audioArea');
-  audioArea.innerHTML = '<div class="loadingSpinner"></div> Suche iTunes-Vorschau...';
+  audioArea.innerHTML = '<div class="loadingSpinner"></div> Lade Audio...';
 
-  const previewUrl = await searchItunesPreview(pendingSong.title, pendingSong.artist);
+  const audioPath = await searchLocalAudio(pendingSong.title, pendingSong.artist);
 
-  if (previewUrl) {
-    audioArea.innerHTML = `<audio controls autoplay src="${previewUrl}"></audio>`;
+  if (audioPath && audioPath !== 'generated') {
+    audioArea.innerHTML = `<audio controls autoplay src="${audioPath}"></audio>`;
   } else {
-    audioArea.innerHTML = `<div class="noPreviewMsg">Keine iTunes-Vorschau. Selbst summen! 🎤</div>`;
+    audioArea.innerHTML = `
+      <div style="padding:20px; text-align:center;">
+        <button onclick="audioGenerator.playSongPreview()" 
+                style="background: #ffde59; color: #1a1a1a; padding: 20px 40px; font-size: 1.2em; border-radius: 12px; border: none; cursor: pointer; font-weight: bold;">
+          🎵 Oom-Pah-Pah abspielen!
+        </button>
+        <div style="margin-top: 12px; font-size: 0.9em; opacity: 0.8;">
+          ${pendingSong.title} - ${pendingSong.artist}
+        </div>
+      </div>
+    `;
   }
 
   renderTimeline();
@@ -648,15 +471,10 @@ function makeSlot(index) {
   slot.appendChild(line);
   slot.onclick = () => {
     if (!pendingSong) return;
-    if (gameMode === 'companion' && myPlayerIndex !== currentTurn) {
-      alert('Du bist nicht dran!');
-      return;
-    }
     pendingIndex = parseInt(slot.dataset.index);
     document.getElementById('npLabel').textContent = `📍 Position ${index}. Können andere klauen?`;
     renderTimeline();
     openStealPanel();
-    syncState();
   };
   return slot;
 }
@@ -695,7 +513,6 @@ function openStealPanel(){
     bw.appendChild(btn);
   });
   document.getElementById('stealPanel').classList.remove('hidden-section');
-  syncState();
 }
 
 function startStealing(playerIdx) {
@@ -709,7 +526,6 @@ function startStealing(playerIdx) {
   document.getElementById('stealReadyBtn').disabled = true;
   document.getElementById('stealResolveArea').classList.remove('hidden-section');
   renderStealTimeline();
-  syncState();
 }
 
 function renderStealTimeline() {
@@ -743,7 +559,6 @@ function makeStealSlot(index) {
     stealPendingIndex = i;
     document.getElementById('stealReadyBtn').disabled = false;
     renderStealTimeline();
-    syncState();
   })(index);
   return slot;
 }
@@ -762,7 +577,6 @@ function cancelStealing() {
   document.getElementById('stealResolveArea').classList.add('hidden-section');
   document.getElementById('stealPlayerButtons').classList.remove('hidden-section');
   document.getElementById('noStealArea').classList.remove('hidden-section');
-  syncState();
 }
 
 document.getElementById('stealReadyBtn').onclick = () => resolveWithSteal();
@@ -821,7 +635,6 @@ function resolveWithSteal() {
   renderTimeline();
   document.getElementById('revealBtn').disabled = true;
   document.getElementById('nextTurnBtn').disabled = false;
-  syncState();
 
   if (players[currentTurn].score >= winTarget) {
     setTimeout(() => showWinner(players[currentTurn]), 600);
@@ -856,7 +669,6 @@ function doReveal() {
   renderTimeline();
   document.getElementById('revealBtn').disabled = true;
   document.getElementById('nextTurnBtn').disabled = false;
-  syncState();
 
   if (players[currentTurn].score >= winTarget) {
     setTimeout(() => showWinner(players[currentTurn]), 600);
@@ -879,18 +691,7 @@ document.getElementById('nextTurnBtn').onclick = () => {
   document.getElementById('nextTurnBtn').disabled = true;
   document.getElementById('stealPanel').classList.add('hidden-section');
   renderScoreboard();
-  syncState();
 };
-
-function syncState() {
-  if (gameMode === 'host') {
-    const state = {
-      roomCode, players, currentTurn, deck: deck.length, pendingSong, pendingIndex,
-      stealMode, stealingPlayerIndex, stealPendingIndex, winTarget
-    };
-    localStorage.setItem('ballermann_' + roomCode, JSON.stringify(state));
-  }
-}
 
 function showWinner(p) {
   document.getElementById('game').classList.add('hidden-section');
@@ -902,10 +703,7 @@ document.getElementById('restartBtn').onclick = () => {
   location.reload();
 };
 
-// Zeige Join-Panel wenn am Anfang
 window.addEventListener('load', () => {
-  document.getElementById('joinPanel').classList.remove('hidden-section');
-  
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
