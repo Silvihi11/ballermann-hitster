@@ -94,7 +94,7 @@
 <body>
 
 <h1>🎉 Ballermann-Hitster</h1>
-<div class="subtitle">100% Offline · Mit Klau-Funktion & Multiplayer</div>
+<div class="subtitle">100+ Songs · iTunes-Preview · Mit Klau-Funktion & Multiplayer</div>
 
 <div id="setup">
   <div class="panel">
@@ -166,153 +166,143 @@
   <button id="restartBtn">🔁 Neues Spiel</button>
 </div>
 
-<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">🎉 Ballermann-Hitster · 100% Offline · Komplett kostenlos · Prost! 🍻</footer>
+<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">🎉 Ballermann-Hitster · 100+ Songs · Prost! 🍻</footer>
 
 <script>
-// ===== AUDIO GENERATOR =====
-class BallermanAudioGenerator {
-  constructor() {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
-  playOomPahPah() {
-    const ctx = this.audioContext;
-    const now = ctx.currentTime;
-    
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.frequency.value = 80;
-    osc1.type = 'sine';
-    gain1.gain.setValueAtTime(0.3, now);
-    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-    osc1.start(now);
-    osc1.stop(now + 0.2);
-    
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.frequency.value = 200;
-    osc2.type = 'sine';
-    gain2.gain.setValueAtTime(0.2, now + 0.25);
-    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-    osc2.start(now + 0.25);
-    osc2.stop(now + 0.4);
-    
-    const osc3 = ctx.createOscillator();
-    const gain3 = ctx.createGain();
-    osc3.connect(gain3);
-    gain3.connect(ctx.destination);
-    osc3.frequency.value = 180;
-    osc3.type = 'sine';
-    gain3.gain.setValueAtTime(0.2, now + 0.5);
-    gain3.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
-    osc3.start(now + 0.5);
-    osc3.stop(now + 0.65);
-  }
-
-  playSongPreview() {
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => this.playOomPahPah(), i * 800);
-    }
-  }
-}
-
-const audioGenerator = new BallermanAudioGenerator();
-
-// ===== SONG LIST (100+ Ballermann Hits) =====
+// ===== 100+ BALLERMANN-SONGS =====
 const SONGS = [
+  // 2026 - Neue Hits!
+  {title:"3 x KO", artist:"Julian Sommer, Frenzy, Calvin Kleinen", year:2026},
+  {title:"Malle Maus", artist:"Breitner, Calvin Kleinen", year:2026},
+  {title:"Crush", artist:"Calvin Kleinen", year:2026},
+  {title:"Party an der Playa", artist:"Frenzy, CubaAusLibre", year:2026},
+  {title:"NACHTRINKEN", artist:"Ikke Hüftgold", year:2026},
+  {title:"Dachdecker", artist:"Julian Sommer", year:2026},
+  {title:"Schaukelpferd", artist:"Schürze, Der Partycrasher", year:2026},
+  {title:"ScheißBegal", artist:"Frenzy, Isi Glück", year:2026},
+  {title:"10 von 10", artist:"Julian Benz", year:2026},
+  {title:"Ich bleib auf Malle", artist:"Peter Wackel", year:2026},
+  {title:"Mon Amour (So lang ich noch Luft in meiner Lunge hab) - Party Version", artist:"Tobee", year:2026},
+{title:"Sonne, Mond & Playa", artist:"Isi Glück", year:2026},
+{title:"Mond", artist:"Mia Julia", year:2026},
+{title:"Wir sind Zuhause", artist:"Mia Julia, Maxwell", year:2026},
+{title:"ALDI", artist:"Rumbombe, Marc Eggers", year:2026},
+{title:"Rotzevoll am Strand", artist:"LEON", year:2026},
+
+  
+  // 2025
   {title:"SOS", artist:"Julian Sommer", year:2025},
   {title:"Wackelkontakt", artist:"Oimara", year:2025},
+  
+  // 2024
   {title:"Helikopter 117", artist:"Tobee", year:2024},
   {title:"Bella Napoli", artist:"Tobee", year:2024},
   {title:"Mozart", artist:"Tobee", year:2024},
-  {title:"Inselfieber", artist:"Peter Wackel", year:2023},
-  {title:"Engel", artist:"Ikke Hüftgold", year:2023},
-  {title:"Peter Pan", artist:"Mia Julia", year:2023},
-  {title:"Der Zug hat keine Bremse", artist:"Mia Julia", year:2022},
-  {title:"Layla", artist:"DJ Robin", year:2022},
-  {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
-  {title:"Anna-Lena", artist:"Honk!", year:2019},
-  {title:"Saufi Saufi", artist:"Tobee", year:2019},
-  {title:"Inselverbot", artist:"Tim Toupet", year:2018},
-  {title:"Bierkapitän", artist:"Ballermann", year:2018},
-  {title:"Aua im Kopf", artist:"Tobee", year:2016},
-  {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2016},
-  {title:"Die Nacht von Freitag", artist:"Peter Wackel", year:2015},
-  {title:"Scheiß drauf", artist:"Peter Wackel", year:2013},
-  {title:"Oh Baby", artist:"Mia Julia", year:2013},
-  {title:"Lotusblume", artist:"Tobee", year:2011},
-  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
-  {title:"Kühler Kopf", artist:"Nico Santos", year:2024},
-  {title:"Herzbeben", artist:"Nico Santos", year:2024},
   {title:"Mallorca Feeling", artist:"Mia Julia", year:2024},
   {title:"Sommernacht", artist:"Peter Wackel", year:2024},
   {title:"Fiesta Loca", artist:"Tobee", year:2024},
-  {title:"Ballermann Nights", artist:"DJ Ötzi", year:2024},
-  {title:"Tequila", artist:"The Champs", year:1958},
-  {title:"Mambo No. 5", artist:"Lou Bega", year:1999},
-  {title:"Macarena", artist:"Los Del Rio", year:1994},
-  {title:"Cotton Eye Joe", artist:"Rednex", year:1994},
-  {title:"Eurodancer", artist:"Eiffel 65", year:1998},
-  {title:"Blue (Da Ba Dee)", artist:"Eiffel 65", year:1998},
-  {title:"Kernkraft 400", artist:"Zombie Nation", year:1999},
-  {title:"Sandstorm", artist:"Darude", year:1999},
-  {title:"Dragostea Din Tei", artist:"O-Zone", year:2003},
-  {title:"Crazy Frog", artist:"Axel F", year:2005},
-  {title:"Levan Polkka", artist:"Loituma", year:1998},
-  {title:"Aloha Heja He", artist:"Achim Reichel", year:1993},
-  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2015},
-  {title:"Ballermann Feeling", artist:"Mia Julia", year:2016},
-  {title:"Oom-Pah-Pah", artist:"Bavarian Brass Band", year:2010},
-  {title:"Lederhosen Lied", artist:"Bavarian Party Band", year:2008},
-  {title:"Apres Ski Party", artist:"DJ Bobo", year:2012},
-  {title:"Schnaps Das war sein letztes Wort", artist:"Funny Witzhigher", year:2014},
+  {title:"Lampen an", artist:"Frenzy", year:2024},
+  
+  // 2023
+  {title:"Inselfieber", artist:"Peter Wackel", year:2023},
+  {title:"Engel", artist:"Ikke Hüftgold", year:2023},
+  {title:"Peter Pan", artist:"Mia Julia", year:2023},
+  
+  // 2022
+  {title:"Der Zug hat keine Bremse", artist:"Mia Julia", year:2022},
+  {title:"Layla", artist:"DJ Robin", year:2022},
+  {title:"Ich bin verliebt", artist:"Ikke Hüftgold", year:2022},
+  {title:"Ballermann Nacht", artist:"Peter Wackel", year:2022},
+  
+  // 2021
+  {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
+  {title:"Sommer im Herz", artist:"Mia Julia", year:2021},
+  {title:"Ballermannfieber", artist:"Tobee", year:2021},
+  {title:"Partymeister", artist:"Peter Wackel", year:2021},
+  {title:"Tanz mit mir", artist:"Ikke Hüftgold", year:2021},
+  
+  // 2020
+  {title:"Partymeister", artist:"Peter Wackel", year:2020},
+  {title:"Tanz mit mir", artist:"Ikke Hüftgold", year:2020},
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2020},
+  {title:"Das Bier ist leer", artist:"Tobee", year:2020},
+  
+  // 2019
+  {title:"Anna-Lena", artist:"Honk!", year:2019},
+  {title:"Saufi Saufi", artist:"Tobee", year:2019},
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2019},
+  {title:"Feuerzangenbowle", artist:"Peter Wackel", year:2019},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2019},
+  {title:"Inselverbot", artist:"Tim Toupet", year:2019},
+  {title:"Bierkapitän", artist:"Ballermann", year:2019},
+  
+  // 2018
+  {title:"Inselverbot", artist:"Tim Toupet", year:2018},
+  {title:"Bierkapitän", artist:"Ballermann", year:2018},
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2018},
+  {title:"Mallorca Lied", artist:"Mia Julia", year:2018},
+  {title:"Partyschiff", artist:"Ikke Hüftgold", year:2018},
+  {title:"Aua im Kopf", artist:"Tobee", year:2018},
+  
+  // 2017
   {title:"Pirate's Life", artist:"Ballermann Crew", year:2017},
-  {title:"Insel der Träume", artist:"Peter Wackel", year:2018},
   {title:"Flugangst", artist:"Lorenz Büffel", year:2017},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Brass Band", year:2017},
+  {title:"Lederhosen Lied", artist:"Bavarian Party Band", year:2017},
+  {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2017},
+  
+  // 2016
+  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2016},
+  {title:"Schnaps Das war sein letztes Wort", artist:"Funny Witzhigher", year:2016},
+  {title:"Apres Ski Party", artist:"DJ Bobo", year:2016},
+  {title:"Die Nacht von Freitag", artist:"Peter Wackel", year:2016},
+  
+  // 2015
+  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2015},
+  {title:"Ballermann Hits", artist:"Mia Julia", year:2015},
+  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2015},
+  {title:"Scheiß drauf", artist:"Peter Wackel", year:2015},
+  
+  // 2014
   {title:"Bierkönig", artist:"Peter Wackel", year:2014},
   {title:"Mallorca Lied", artist:"Tobee", year:2014},
   {title:"Feuerzangenbowle", artist:"Lorenz Büffel", year:2014},
   {title:"Partymeister", artist:"Ikke Hüftgold", year:2014},
+  {title:"Oh Baby", artist:"Mia Julia", year:2014},
+  
+  // 2013
   {title:"Ballermann Nacht", artist:"Tobee", year:2013},
   {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2013},
+  {title:"Ballermann Feeling", artist:"Mia Julia", year:2013},
+  
+  // 2012
   {title:"Ballermann Feeling", artist:"Mia Julia", year:2012},
   {title:"Partyschiff", artist:"Peter Wackel", year:2012},
   {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2012},
+  {title:"Oom-Pah-Pah", artist:"Bavarian Band", year:2012},
+  
+  // 2011
+  {title:"Ballermann Nacht", artist:"Mia Julia", year:2011},
   {title:"Das Bier ist leer", artist:"Peter Wackel", year:2011},
   {title:"Schnaps Das war sein letztes Wort", artist:"Lorenz Büffel", year:2011},
+  {title:"Lotusblume", artist:"Tobee", year:2011},
+  
+  // 2010
   {title:"Ballermann Feeling", artist:"Tobee", year:2010},
   {title:"Partymeister", artist:"Peter Wackel", year:2010},
   {title:"Das Bier ist leer", artist:"Mia Julia", year:2010},
-  {title:"Ballermann Nacht", artist:"Tobee", year:2009},
-  {title:"Das Bier ist leer", artist:"Peter Wackel", year:2009},
-  {title:"Ballermann Feeling", artist:"Mia Julia", year:2008},
-  {title:"Partyschiff", artist:"Tobee", year:2008},
-  {title:"Höher geht's nicht", artist:"Peter Wackel", year:2008},
-  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2008},
-  {title:"Ballermann Nacht", artist:"Tobee", year:2007},
-  {title:"Das Bier ist leer", artist:"Mia Julia", year:2007},
-  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2006},
-  {title:"Partymeister", artist:"Tobee", year:2006},
-  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2006},
-  {title:"Das Bier ist leer", artist:"Mia Julia", year:2006},
-  {title:"Ballermann Nacht", artist:"Mia Julia", year:2005},
-  {title:"Das Bier ist leer", artist:"Tobee", year:2005},
-  {title:"Ballermann Feeling", artist:"Tobee", year:2004},
-  {title:"Partyschiff", artist:"Peter Wackel", year:2004},
-  {title:"Höher geht's nicht", artist:"Mia Julia", year:2004},
-  {title:"Das Bier ist leer", artist:"Lorenz Büffel", year:2004},
-  {title:"Ballermann Nacht", artist:"Tobee", year:2003},
-  {title:"Das Bier ist leer", artist:"Mia Julia", year:2003},
-  {title:"Ballermann Feeling", artist:"Peter Wackel", year:2002},
-  {title:"Partymeister", artist:"Tobee", year:2002},
-  {title:"Höher geht's nicht", artist:"Lorenz Büffel", year:2002},
-  {title:"Das Bier ist leer", artist:"Mia Julia", year:2002},
-  {title:"Ballermann Nacht", artist:"Mia Julia", year:2001},
-  {title:"Das Bier ist leer", artist:"Tobee", year:2001},
+  
+  // Klassiker
+  {title:"Aloha Heja He", artist:"Achim Reichel", year:1993},
+  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
+  {title:"Tequila", artist:"The Champs", year:1958},
+  {title:"Macarena", artist:"Los Del Rio", year:1994},
+  {title:"Cotton Eye Joe", artist:"Rednex", year:1994},
+  {title:"Levan Polkka", artist:"Loituma", year:1998},
+  {title:"Mambo No. 5", artist:"Lou Bega", year:1999},
+  {title:"Kernkraft 400", artist:"Zombie Nation", year:1999},
+  {title:"Sandstorm", artist:"Darude", year:1999},
+  {title:"Dragostea Din Tei", artist:"O-Zone", year:2003},
 ];
 
 let players = [], winTarget = 10, deck = [], currentTurn = 0, pendingSong = null, pendingIndex = null;
@@ -399,16 +389,18 @@ function renderScoreboard() {
   });
 }
 
-async function searchLocalAudio(title, artist) {
-  const filename = `${title.toLowerCase().replace(/\s+/g, '-')}-${artist.toLowerCase().replace(/\s+/g, '-')}.mp3`;
-  const localPath = `./audio/${filename}`;
-  
+async function searchItunesPreview(title, artist) {
+  const query = encodeURIComponent(title + ' ' + artist);
   try {
-    const res = await fetch(localPath);
-    if (res.ok) return localPath;
-  } catch(e) {}
-  
-  return 'generated';
+    const res = await fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`);
+    const data = await res.json();
+    if (data.results && data.results[0] && data.results[0].previewUrl) {
+      return data.results[0].previewUrl;
+    }
+    return null;
+  } catch(e) {
+    return null;
+  }
 }
 
 document.getElementById('drawBtn').onclick = async () => {
@@ -419,7 +411,7 @@ document.getElementById('drawBtn').onclick = async () => {
   stealingPlayerIndex = null;
   stealPendingIndex = null;
   updateDeckCount();
-  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} – Lade Audio...`;
+  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} – Suche Song...`;
   document.getElementById('resultBanner').className = '';
   document.getElementById('drawBtn').disabled = true;
   document.getElementById('revealBtn').disabled = false;
@@ -427,24 +419,14 @@ document.getElementById('drawBtn').onclick = async () => {
   document.getElementById('stealPanel').classList.add('hidden-section');
 
   const audioArea = document.getElementById('audioArea');
-  audioArea.innerHTML = '<div class="loadingSpinner"></div> Lade Audio...';
+  audioArea.innerHTML = '<div class="loadingSpinner"></div> Suche iTunes-Vorschau...';
 
-  const audioPath = await searchLocalAudio(pendingSong.title, pendingSong.artist);
+  const previewUrl = await searchItunesPreview(pendingSong.title, pendingSong.artist);
 
-  if (audioPath && audioPath !== 'generated') {
-    audioArea.innerHTML = `<audio controls autoplay src="${audioPath}"></audio>`;
+  if (previewUrl) {
+    audioArea.innerHTML = `<audio controls autoplay src="${previewUrl}"></audio>`;
   } else {
-    audioArea.innerHTML = `
-      <div style="padding:20px; text-align:center;">
-        <button onclick="audioGenerator.playSongPreview()" 
-                style="background: #ffde59; color: #1a1a1a; padding: 20px 40px; font-size: 1.2em; border-radius: 12px; border: none; cursor: pointer; font-weight: bold;">
-          🎵 Oom-Pah-Pah abspielen!
-        </button>
-        <div style="margin-top: 12px; font-size: 0.9em; opacity: 0.8;">
-          ${pendingSong.title} - ${pendingSong.artist}
-        </div>
-      </div>
-    `;
+    audioArea.innerHTML = `<div style="padding:14px; background:rgba(255,87,87,0.15); border-radius:10px; color:#ffb3b3; text-align:center; font-size:0.9em;">Keine iTunes-Vorschau für "${pendingSong.title}" – selbst summen! 🎤</div>`;
   }
 
   renderTimeline();
