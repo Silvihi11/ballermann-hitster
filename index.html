@@ -2,47 +2,60 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Ballermann-Hitster</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14324d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ballermann-Hitster">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root { --card-bg: #ffde59; --card-text: #1a1a1a; --accent: #ff5757; --accent2: #2ec4b6; }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: radial-gradient(circle at top, #14324d, #071019 80%); color: white; min-height: 100vh; padding: 20px; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: radial-gradient(circle at top, #14324d, #071019 80%); color: white; min-height: 100vh; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom)); }
   h1 { text-align: center; font-size: 1.8em; margin-bottom: 4px; color: #ffde59; text-shadow: 0 0 12px rgba(255,222,89,0.5); }
-  .subtitle { text-align:center; opacity:0.75; margin-bottom: 20px; font-size:0.9em;}
+  .subtitle { text-align:center; opacity:0.75; margin-bottom: 18px; font-size:0.82em; }
   #setup, #game { max-width: 900px; margin: 0 auto; }
-  .panel { background: rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; margin-bottom: 16px; backdrop-filter: blur(4px); }
+  .panel { background: rgba(255,255,255,0.06); border-radius: 16px; padding: 16px; margin-bottom: 14px; backdrop-filter: blur(4px); }
   label { display:block; margin: 10px 0 4px; font-weight:600; }
-  input[type=text], input[type=number], select { width: 100%; padding: 8px 10px; border-radius: 8px; border: none; font-size: 1em; }
+  input[type=text], input[type=number] { width: 100%; padding: 12px; border-radius: 8px; border: none; font-size: 16px; margin-bottom: 10px; }
   .playerRow { display:flex; gap:8px; margin-bottom:6px; }
-  .playerRow input { flex:1; }
-  button { cursor: pointer; border: none; border-radius: 10px; padding: 10px 18px; font-size: 1em; font-weight: 700; background: var(--accent2); color: #06282a; transition: transform 0.15s ease, filter 0.15s ease; }
+  .playerRow input { flex:1; margin-bottom: 0; }
+  button { cursor: pointer; border: none; border-radius: 10px; padding: 13px 18px; font-size: 1em; font-weight: 700; background: var(--accent2); color: #06282a; transition: transform 0.15s ease, filter 0.15s ease; min-height: 46px; touch-action: manipulation; }
   button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  button:active { transform: scale(0.97); filter: brightness(1.15); }
   button.secondary { background: #ffde59; color:#3a2b00; }
-  button.danger { background: var(--accent); color:white; }
+  button.danger { background: var(--accent); color:white; min-width: 46px; }
+  button.steal { background: linear-gradient(135deg, #ff5757, #ff8c00); color:white; }
   button:disabled { opacity: 0.4; cursor:not-allowed; transform:none; }
+
   #scoreboard { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom: 14px; }
   .playerBadge { padding: 8px 14px; border-radius: 30px; background: rgba(255,255,255,0.08); font-weight:600; border: 2px solid transparent; }
   .playerBadge.active { border-color:#ffde59; background: rgba(255,222,89,0.18); }
   .playerBadge .count { color:#2ec4b6; margin-left:6px; }
-  #controls { display:flex; justify-content:center; gap:12px; margin-bottom: 18px; flex-wrap:wrap; }
+
+  #controls { display:flex; justify-content:center; gap:10px; margin-bottom: 16px; flex-wrap:wrap; }
+  #controls button { flex: 1 1 140px; }
   #deckCount { text-align:center; opacity:0.6; font-size:0.85em; margin-bottom:10px; }
-  #timelineWrap { overflow-x: auto; padding: 20px 10px 30px; background: rgba(0,0,0,0.25); border-radius: 16px; }
-  #timeline { display:flex; align-items:center; min-height: 150px; width: max-content; padding: 0 20px; }
-  .slot { width: 26px; min-width: 26px; height: 130px; display:flex; align-items:center; justify-content:center; position: relative; }
-  .slot .dropline { width: 4px; height: 100%; background: rgba(255,255,255,0.12); border-radius: 4px; transition: background 0.15s, width 0.15s; }
-  .slot.dragover .dropline { background: #ffde59; width: 8px; box-shadow: 0 0 12px #ffde59; }
-  .card { width: 110px; height: 130px; background: linear-gradient(160deg, var(--card-bg), #ffb703); color: var(--card-text); border-radius: 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); cursor: grab; flex-shrink:0; position: relative; user-select:none; }
+  #timelineWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 18px 8px 26px; background: rgba(0,0,0,0.25); border-radius: 16px; }
+  #timeline { display:flex; align-items:center; min-height: 140px; width: max-content; padding: 0 16px; }
+
+  .slot { width: 70px; min-width: 70px; height: 120px; display:flex; align-items:center; justify-content:center; position: relative; margin: 0 4px; }
+  .slot .dropline { width: 100%; height: 100%; background: rgba(255,255,255,0.03); border: 2px dashed rgba(255,255,255,0.3); border-radius: 14px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .slot .dropline::after { content: "Hier ablegen"; font-size: 0.65em; color: rgba(255,255,255,0.4); text-align: center; padding: 0 4px; }
+
+  .card { width: 100px; height: 120px; background: linear-gradient(160deg, var(--card-bg), #ffb703); color: var(--card-text); border-radius: 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); flex-shrink:0; position: relative; user-select:none; }
   .card .year { font-size: 1.6em; font-weight:800; }
   .card .title { font-size: 0.65em; font-weight:600; margin-top:4px; line-height:1.1; }
   .card .artist { font-size: 0.58em; opacity:0.75; }
   .card.hidden .year, .card.hidden .title, .card.hidden .artist { visibility: hidden; }
   .card.hidden::after { content: "?"; position:absolute; font-size: 2.4em; font-weight:900; color: rgba(0,0,0,0.35); }
   .card.pending { outline: 3px dashed #ff5757; animation: pulse 1.2s infinite; }
-  .card.dragging { opacity: 0.3; }
   @keyframes pulse { 0%,100%{box-shadow:0 0 0 rgba(255,87,87,0.6);} 50%{box-shadow:0 0 18px rgba(255,87,87,0.9);} }
+
   #nowPlaying { text-align:center; margin-bottom: 14px; font-size:1.1em; }
-  #nowPlaying .hint { opacity:0.6; font-size:0.85em; }
-  #audioPlayer { width: 100%; margin: 10px 0; }
   .noPreviewMsg { padding:14px; background:rgba(255,87,87,0.15); border-radius:10px; color:#ffb3b3; text-align:center; }
   #resultBanner { text-align:center; padding: 10px; border-radius:10px; font-weight:700; margin-bottom:10px; display:none; }
   #resultBanner.show { display:block; }
@@ -50,18 +63,68 @@
   #resultBanner.bad { background: rgba(255,87,87,0.25); color:#ff5757; }
   #winnerBox { text-align:center; }
   #winnerBox h2 { color:#ffde59; }
-  footer { text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px; }
-  .hidden-section { display:none; }
+
+  #stealPanel { border: 2px solid rgba(255,140,0,0.6); border-radius: 16px; padding: 16px; margin-bottom: 14px; background: rgba(255,140,0,0.08); }
+  #stealPanel h3 { color: #ff8c00; margin: 0 0 6px; }
+  #stealPanel .stealhint { font-size:0.82em; opacity:0.85; margin-bottom:12px; line-height:1.4; }
+  #stealPlayerButtons { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+  #stealPlayerButtons button { flex: 1 1 120px; }
+  #stealTimelineWrap { overflow-x:auto; -webkit-overflow-scrolling:touch; padding:14px 8px 18px; background:rgba(0,0,0,0.3); border-radius:12px; margin-bottom:10px; }
+  #stealTimeline { display:flex; align-items:center; min-height:130px; width:max-content; padding:0 12px; }
+  .stealCard { width:100px; height:120px; background:linear-gradient(160deg,#ff8c00,#ffb703); color:#1a1a1a; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; box-shadow:0 6px 14px rgba(0,0,0,0.4); flex-shrink:0; position:relative; }
+  .stealCard .year { font-size:1.6em; font-weight:800; }
+  .stealCard .title { font-size:0.65em; font-weight:600; margin-top:4px; line-height:1.1; }
+  .stealCard .artist { font-size:0.58em; opacity:0.75; }
+  .stealCard.hidden .year,.stealCard.hidden .title,.stealCard.hidden .artist { visibility:hidden; }
+  .stealCard.hidden::after { content:"?"; position:absolute; font-size:2.4em; font-weight:900; color:rgba(0,0,0,0.3); }
+  .stealCard.pending { outline:3px dashed #ff5757; animation:pulse 1.2s infinite; }
+  .stealSlot { width:60px; min-width:60px; height:110px; display:flex; align-items:center; justify-content:center; margin:0 3px; }
+  .stealSlot .dropline { width:100%; height:100%; background:rgba(255,87,87,0.05); border:2px dashed rgba(255,87,87,0.4); border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.15s; font-size:0.65em; color:rgba(255,255,255,0.4); }
+  .stealSlot .dropline:hover,.stealSlot.selected .dropline { background:rgba(255,87,87,0.25); border-color:#ff5757; border-width:3px; box-shadow:0 0 10px rgba(255,87,87,0.4); }
+  #stealControls { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  #stealControls button { flex:1 1 120px; }
+
+  .hidden-section { display:none !important; }
   .loadingSpinner { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid #ffde59; border-radius:50%; animation:spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Multiplayer Panel */
+  #multiplayerPanel { background: rgba(46,196,182,0.1); border: 2px solid #2ec4b6; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  #multiplayerPanel h3 { color: #2ec4b6; margin-top: 0; }
+  .roomCode { font-size: 2.4em; font-weight: 900; color: #ffde59; text-align: center; letter-spacing: 8px; font-family: monospace; margin: 16px 0; text-shadow: 0 0 10px rgba(255,222,89,0.5); }
+  .connectedPlayers { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .connectedPlayers .badge { padding: 6px 12px; background: rgba(46,196,182,0.2); border-radius: 20px; font-size: 0.85em; border-left: 3px solid #2ec4b6; }
+
+  #joinPanel { background: rgba(255,140,0,0.1); border: 2px solid #ff8c00; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  #joinPanel h3 { color: #ff8c00; margin-top: 0; }
+  .joinForm { display: flex; gap: 8px; }
+  .joinForm input { flex: 1; }
+  .joinForm button { flex: 0 0 auto; }
+
+  #roleBanner { text-align: center; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 10px; font-size: 0.85em; opacity: 0.8; }
+
+  @media (max-width: 400px) {
+    body { padding: 12px; } h1 { font-size: 1.3em; } .panel { padding: 12px; } #controls button { flex-basis: 100%; }
+  }
 </style>
 </head>
 <body>
 
-<h1>Ballermann-Hitster</h1>
-<div class="subtitle">iTunes-Preview Edition · Hotseat · Timeline-Kartenspiel</div>
+<h1>🎉 Ballermann-Hitster</h1>
+<div class="subtitle">iTunes-Preview · Offline-Fähig · Mit Klau-Funktion & Multiplayer</div>
 
-<!-- PLAYER SETUP -->
+<!-- MULTIPLAYER JOIN -->
+<div id="joinPanel" class="panel hidden-section">
+  <h3>🤝 Zu einem Spiel verbinden?</h3>
+  <p style="font-size:0.85em;opacity:0.8;">Gib den 4-stelligen Code ein, den das Haupt-Handy anzeigt.</p>
+  <div class="joinForm">
+    <input type="text" id="joinCodeInput" placeholder="z.B. 4821" maxlength="4">
+    <button class="secondary" onclick="joinGame()">Verbinden</button>
+  </div>
+  <p id="joinStatus" style="font-size:0.85em;margin-top:8px;color:#2ec4b6;"></p>
+</div>
+
+<!-- SETUP -->
 <div id="setup">
   <div class="panel">
     <h3>Spieler</h3>
@@ -71,7 +134,13 @@
   <div class="panel">
     <h3>Einstellungen</h3>
     <label>Karten zum Sieg</label>
-    <input type="number" id="winTarget" value="10" min="3" max="44">
+    <input type="number" id="winTarget" value="10" min="3" max="100">
+  </div>
+  <div class="panel">
+    <label style="display:flex; align-items:center; gap:8px; font-weight:normal; margin-bottom:0;">
+      <input type="checkbox" id="multiplayerToggle" style="width:auto; margin:0;">
+      Mit anderen Handys spielen
+    </label>
   </div>
   <div style="text-align:center;">
     <button id="startBtn">Spiel starten</button>
@@ -80,12 +149,19 @@
 
 <!-- GAME -->
 <div id="game" class="hidden-section">
+  <div id="roleBanner"></div>
+  <div id="multiplayerPanel" class="hidden-section">
+    <h3>🤝 Verbundene Spieler</h3>
+    <div class="roomCode" id="roomCodeDisplay"></div>
+    <div class="connectedPlayers" id="connectedPlayersList"></div>
+  </div>
+
   <div id="scoreboard"></div>
   <div id="resultBanner"></div>
   <div id="nowPlaying" class="panel">
     <div id="npLabel">Bereit?</div>
     <div id="audioArea"></div>
-    <div class="hint">Song abspielen, dann die geheime Karte per Drag & Drop an die richtige Stelle in der Timeline ziehen.</div>
+    <div style="opacity:0.6; font-size:0.85em; margin-top:6px;">Song abspielen, dann die geheime Karte per Klick an die richtige Stelle.</div>
   </div>
   <div id="deckCount"></div>
   <div id="controls">
@@ -93,9 +169,32 @@
     <button id="revealBtn" disabled>✅ Auflösen</button>
     <button id="nextTurnBtn" disabled>➡️ Nächster Spieler</button>
   </div>
-  <div id="timelineWrap">
-    <div id="timeline"></div>
+
+  <div id="stealPanel" class="hidden-section">
+    <h3>🃏 Klauen? Jetzt oder nie!</h3>
+    <p class="stealhint">
+      <strong id="activePlayerName"></strong> hat die Karte platziert – aber noch niemand weiß ob richtig oder falsch!<br>
+      Wer möchte gegenbieten? Der Klauende sieht den Zeitstrahl und muss die Karte dort einordnen.
+    </p>
+    <div id="stealPlayerButtons"></div>
+    <div id="stealPlacementArea" class="hidden-section">
+      <p style="font-size:0.9em;margin-bottom:4px;">
+        <strong id="stealingPlayerName"></strong> – wo gehört die Karte in den Zeitstrahl?
+      </p>
+      <div id="stealTimelineWrap"><div id="stealTimeline"></div></div>
+      <div id="stealControls">
+        <button class="secondary" id="stealCancelBtn">↩ Doch nicht klauen</button>
+      </div>
+    </div>
+    <div id="stealResolveArea" class="hidden-section" style="margin-top:8px;">
+      <button class="steal" id="stealReadyBtn" style="width:100%;" disabled>✅ Fertig – beide auflösen!</button>
+    </div>
+    <div id="noStealArea">
+      <button id="noStealRevealBtn" style="background:rgba(255,255,255,0.12);color:white;width:100%;">Niemand klaut – direkt auflösen</button>
+    </div>
   </div>
+
+  <div id="timelineWrap"><div id="timeline"></div></div>
 </div>
 
 <div id="winnerBox" class="panel hidden-section">
@@ -103,64 +202,38 @@
   <button id="restartBtn">🔁 Neues Spiel</button>
 </div>
 
-<footer>Rein privates Fanprojekt, inspiriert von Hitster. Kein offizielles Produkt. Musik via iTunes-API.</footer>
+<footer style="text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px;">Rein privates Fanprojekt. Musik via iTunes-API. Offline-fähig! 📱</footer>
 
 <script>
 const SONGS = [
   {title:"SOS", artist:"Julian Sommer", year:2025},
-  {title:"Wackelkontakt", artist:"Oimara", year:2024},
-  {title:"Helikopter 117", artist:"Tobee", year:2017},
-  {title:"Anna-Lena", artist:"Honk! feat. Deejay Matze", year:2019},
-  {title:"Der Zug hat keine Bremse", artist:"Mia Julia & Lorenz Büffel", year:2022},
-  {title:"Ich bin morgens immer müde", artist:"Peter Wackel", year:2022},
-  {title:"Inselverbot", artist:"Tim Toupet", year:2018},
-  {title:"Saufi Saufi", artist:"Tobee", year:2019},
-  {title:"Die Nacht von Freitag auf Montag", artist:"Peter Wackel", year:2015},
-  {title:"Lotusblume", artist:"Tobee", year:2011},
-  {title:"Auffe aufn Berg", artist:"Jägermeister DJ Alex & Matty Valentino", year:2016},
-  {title:"Scheiß drauf (Malle ist nur einmal im Jahr)", artist:"Peter Wackel", year:2013},
-  {title:"Aua im Kopf", artist:"Tobee", year:2016},
-  {title:"Dicht im Flieger", artist:"Julian Sommer", year:2022},
-  {title:"Inselfieber", artist:"Peter Wackel", year:2023},
-  {title:"Schnelle Brille", artist:"Nancy Franck", year:2023},
-  {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
-  {title:"Engel", artist:"Ikke Hüftgold", year:2023},
+  {title:"Wackelkontakt", artist:"Oimara", year:2025},
+  {title:"Helikopter 117", artist:"Tobee", year:2024},
   {title:"Bella Napoli", artist:"Tobee", year:2024},
-  {title:"Auf zum Ballermann", artist:"Ballermann Party-Hit", year:2018},
-  {title:"Mozart (Ciao Niveau)", artist:"Tobee", year:2024},
-  {title:"Handwerker", artist:"Mickie Krause & Julian Sommer", year:2022},
-  {title:"Lampen an", artist:"Frenzy", year:2023},
-  {title:"Mon Amour", artist:"Ballermann Party-Hit", year:2025},
-  {title:"Delfin", artist:"Isi Glück", year:2025},
-  {title:"Blödsinn", artist:"LUNAX & Isi Glück", year:2025},
-  {title:"Babybell", artist:"Breitner", year:2024},
-  {title:"Bring mich nach Hause", artist:"Mia Julia", year:2023},
-  {title:"Eine Woche wach", artist:"Mickie Krause", year:2019},
-  {title:"Bumsbar", artist:"Ikke Hüftgold feat. DJ Robin & Schürze", year:2023},
-  {title:"Peter Pan", artist:"Mia Julia & Julian Sommer", year:2023},
-  {title:"Layla", artist:"DJ Robin & Schürze", year:2022},
-  {title:"Liebe auf der Rückbank", artist:"Ballermann Party-Hit", year:2023},
-  {title:"Oh Baby", artist:"Mia Julia", year:2013},
-  {title:"Endlich wieder Malle", artist:"Ballermann Party-Hit", year:2017},
-  {title:"Malle is Liebe", artist:"Kreisligalegende", year:2024},
-  {title:"Bierkapitän", artist:"Ballermann Party-Hit", year:2018},
-  {title:"Saufen - morgens, mittags, abends", artist:"Ingo ohne Flamingo", year:2017},
-  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
+  {title:"Mozart", artist:"Tobee", year:2024},
+  {title:"Inselfieber", artist:"Peter Wackel", year:2023},
+  {title:"Engel", artist:"Ikke Hüftgold", year:2023},
+  {title:"Peter Pan", artist:"Mia Julia", year:2023},
+  {title:"Der Zug hat keine Bremse", artist:"Mia Julia", year:2022},
+  {title:"Layla", artist:"DJ Robin", year:2022},
+  {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
+  {title:"Anna-Lena", artist:"Honk!", year:2019},
+  {title:"Saufi Saufi", artist:"Tobee", year:2019},
+  {title:"Inselverbot", artist:"Tim Toupet", year:2018},
+  {title:"Bierkapitän", artist:"Ballermann", year:2018},
+  {title:"Aua im Kopf", artist:"Tobee", year:2016},
   {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2016},
-  {title:"Senorita (Torero)", artist:"Almklausi", year:2020},
-  {title:"M.I.A. meine Gang", artist:"Mia Julia", year:2017},
-  {title:"3er", artist:"Frenzy", year:2025},
-  {title:"Baila Baila", artist:"Mickie Krause, Lorenz Büffel, Kings of Günter & Immer Hansi", year:2025},
+  {title:"Die Nacht von Freitag", artist:"Peter Wackel", year:2015},
+  {title:"Scheiß drauf", artist:"Peter Wackel", year:2013},
+  {title:"Oh Baby", artist:"Mia Julia", year:2013},
+  {title:"Lotusblume", artist:"Tobee", year:2011},
+  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
 ];
 
-let players = [];
-let winTarget = 10;
-let deck = [];
-let currentTurn = 0;
-let placedCards = [];
-let pendingSong = null;
-let pendingIndex = null;
-let currentPreviewUrl = null;
+let players = [], winTarget = 10, deck = [], currentTurn = 0, pendingSong = null, pendingIndex = null;
+let stealMode = false, stealingPlayerIndex = null, stealPendingIndex = null;
+let gameMode = 'local', roomCode = null, myPlayerIndex = null, connectedPlayers = {};
+let ws = null;
 
 const playerInputs = document.getElementById('playerInputs');
 function addPlayerRow(name) {
@@ -184,23 +257,151 @@ document.getElementById('addPlayerBtn').onclick = () => addPlayerRow('');
 
 document.getElementById('startBtn').onclick = () => {
   const names = [...playerInputs.querySelectorAll('input')].map(i => i.value.trim()).filter(Boolean);
-  if (names.length < 1) { alert('Bitte mindestens einen Spielernamen eingeben.'); return; }
-  players = names.map(n => ({name:n, score:0}));
+  if (names.length < 1) { alert('Mindestens einen Spieler!'); return; }
+  
+  players = names.map(n => ({name:n, score:0, timeline:[]}));
   winTarget = Math.min(parseInt(document.getElementById('winTarget').value) || 10, SONGS.length);
   deck = shuffle([...SONGS]);
   currentTurn = 0;
-  placedCards = [];
+  myPlayerIndex = 0;
+  players.forEach(p => { if (deck.length > 0) p.timeline.push(deck.pop()); });
+  
+  if (document.getElementById('multiplayerToggle').checked) {
+    gameMode = 'host';
+    roomCode = generateRoomCode();
+    startLocalServer();
+  } else {
+    gameMode = 'local';
+  }
+  
   document.getElementById('setup').classList.add('hidden-section');
+  document.getElementById('joinPanel').classList.add('hidden-section');
   document.getElementById('game').classList.remove('hidden-section');
+  
+  if (gameMode === 'host') {
+    document.getElementById('multiplayerPanel').classList.remove('hidden-section');
+    document.getElementById('roomCodeDisplay').textContent = roomCode;
+    document.getElementById('roleBanner').textContent = '🎮 Haupt-Handy · Code: ' + roomCode;
+  } else {
+    document.getElementById('roleBanner').textContent = '📱 Einzelspiel-Modus';
+  }
+  
   renderScoreboard();
   renderTimeline();
   updateDeckCount();
 };
 
-document.getElementById('restartBtn').onclick = () => {
-  document.getElementById('winnerBox').classList.add('hidden-section');
-  document.getElementById('setup').classList.remove('hidden-section');
-};
+function generateRoomCode() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+function startLocalServer() {
+  connectedPlayers[0] = players[0].name;
+  updateConnectedPlayers();
+  
+  // Simuliere lokalen Server via localStorage (für WLAN-Netzwerk)
+  setInterval(() => {
+    if (gameMode === 'host') {
+      const state = {
+        roomCode, players, currentTurn, deck: deck.length, pendingSong, pendingIndex,
+        stealMode, stealingPlayerIndex, stealPendingIndex
+      };
+      localStorage.setItem('ballermann_' + roomCode, JSON.stringify(state));
+    }
+  }, 500);
+}
+
+function joinGame() {
+  const code = document.getElementById('joinCodeInput').value.trim();
+  if (!/^\d{4}$/.test(code)) {
+    document.getElementById('joinStatus').textContent = '❌ Bitte 4-stelligen Code eingeben!';
+    return;
+  }
+  
+  roomCode = code;
+  gameMode = 'companion';
+  document.getElementById('joinStatus').textContent = '🔄 Verbinde...';
+  
+  // Warte auf Spiel vom Host
+  const checkInterval = setInterval(() => {
+    const state = localStorage.getItem('ballermann_' + code);
+    if (state) {
+      clearInterval(checkInterval);
+      const data = JSON.parse(state);
+      players = data.players;
+      currentTurn = data.currentTurn;
+      deck = new Array(data.deck);
+      pendingSong = data.pendingSong;
+      pendingIndex = data.pendingIndex;
+      winTarget = data.winTarget || 10;
+      
+      // Spieler auswählen
+      showPlayerPicker();
+    }
+  }, 500);
+  
+  setTimeout(() => {
+    clearInterval(checkInterval);
+    if (gameMode === 'companion' && myPlayerIndex === null) {
+      document.getElementById('joinStatus').textContent = '❌ Spiel nicht gefunden!';
+    }
+  }, 10000);
+}
+
+function showPlayerPicker() {
+  document.getElementById('setup').classList.add('hidden-section');
+  document.getElementById('joinPanel').classList.add('hidden-section');
+  document.getElementById('game').classList.remove('hidden-section');
+  document.getElementById('roleBanner').textContent = '📱 Mitspieler-Handy · Raum ' + roomCode + ' · Wähle deinen Spieler:';
+  
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  players.forEach((p, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'secondary';
+    btn.textContent = p.name;
+    btn.style.flex = '1 1 140px';
+    btn.onclick = () => {
+      myPlayerIndex = idx;
+      document.getElementById('roleBanner').textContent = '📱 Mitspieler-Handy · ' + p.name + ' · Raum ' + roomCode;
+      renderScoreboard();
+      startSyncLoop();
+    };
+    sb.appendChild(btn);
+  });
+}
+
+function startSyncLoop() {
+  setInterval(() => {
+    if (gameMode === 'companion') {
+      const state = localStorage.getItem('ballermann_' + roomCode);
+      if (state) {
+        const data = JSON.parse(state);
+        players = data.players;
+        currentTurn = data.currentTurn;
+        pendingSong = data.pendingSong;
+        pendingIndex = data.pendingIndex;
+        stealMode = data.stealMode;
+        stealingPlayerIndex = data.stealingPlayerIndex;
+        stealPendingIndex = data.stealPendingIndex;
+        renderScoreboard();
+        renderTimeline();
+        updateDeckCount();
+      }
+    }
+  }, 300);
+}
+
+function updateConnectedPlayers() {
+  const list = document.getElementById('connectedPlayersList');
+  list.innerHTML = '';
+  Object.values(connectedPlayers).forEach(name => {
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = '✓ ' + name;
+    list.appendChild(badge);
+  });
+}
 
 function shuffle(arr) {
   const a = [...arr];
@@ -212,7 +413,7 @@ function shuffle(arr) {
 }
 
 function updateDeckCount() {
-  document.getElementById('deckCount').textContent = `🎴 Noch ${deck.length} Songs im Stapel`;
+  document.getElementById('deckCount').textContent = `🎴 ${deck.length} Songs`;
 }
 
 function renderScoreboard() {
@@ -236,42 +437,45 @@ async function searchItunesPreview(title, artist) {
     }
     return null;
   } catch(e) {
-    console.error('iTunes API error:', e);
     return null;
   }
 }
 
 document.getElementById('drawBtn').onclick = async () => {
-  if (deck.length === 0) { alert('Keine Songs mehr im Stapel! Spiel endet hier.'); return; }
+  if (deck.length === 0) { alert('Keine Songs mehr!'); return; }
   pendingSong = deck.pop();
   pendingIndex = null;
+  stealMode = false;
+  stealingPlayerIndex = null;
+  stealPendingIndex = null;
   updateDeckCount();
-  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} ist dran – Suche Song...`;
+  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} – Suche Song...`;
   document.getElementById('resultBanner').className = '';
-  document.getElementById('resultBanner').textContent = '';
   document.getElementById('drawBtn').disabled = true;
   document.getElementById('revealBtn').disabled = false;
   document.getElementById('nextTurnBtn').disabled = true;
+  document.getElementById('stealPanel').classList.add('hidden-section');
+  syncState();
 
   const audioArea = document.getElementById('audioArea');
   audioArea.innerHTML = '<div class="loadingSpinner"></div> Suche iTunes-Vorschau...';
 
   const previewUrl = await searchItunesPreview(pendingSong.title, pendingSong.artist);
-  currentPreviewUrl = previewUrl;
 
   if (previewUrl) {
-    audioArea.innerHTML = `<audio id="previewAudio" controls autoplay src="${previewUrl}"></audio>`;
+    audioArea.innerHTML = `<audio controls autoplay src="${previewUrl}"></audio>`;
   } else {
-    audioArea.innerHTML = `<div class="noPreviewMsg">Keine iTunes-Vorschau gefunden für "${pendingSong.title}". Bitte selbst summen 🎤 oder auf YouTube suchen.</div>`;
+    audioArea.innerHTML = `<div class="noPreviewMsg">Keine iTunes-Vorschau. Selbst summen! 🎤</div>`;
   }
 
-  addPendingCardToTimeline();
+  renderTimeline();
 };
 
 function renderTimeline() {
   const tl = document.getElementById('timeline');
   tl.innerHTML = '';
-  const sorted = [...placedCards].sort((a,b) => a.year - b.year);
+  const sorted = [...players[currentTurn].timeline].sort((a,b) => a.year - b.year);
+  if (pendingSong) tl.appendChild(makePendingCardEl());
   tl.appendChild(makeSlot(0));
   sorted.forEach((card, i) => {
     tl.appendChild(makeCardEl(card));
@@ -286,13 +490,17 @@ function makeSlot(index) {
   const line = document.createElement('div');
   line.className = 'dropline';
   slot.appendChild(line);
-  slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('dragover'); };
-  slot.ondragleave = () => slot.classList.remove('dragover');
-  slot.ondrop = (e) => {
-    e.preventDefault();
-    slot.classList.remove('dragover');
+  slot.onclick = () => {
+    if (!pendingSong) return;
+    if (gameMode === 'companion' && myPlayerIndex !== currentTurn) {
+      alert('Du bist nicht dran!');
+      return;
+    }
     pendingIndex = parseInt(slot.dataset.index);
-    highlightPendingSlot(slot);
+    document.getElementById('npLabel').textContent = `📍 Position ${index}. Können andere klauen?`;
+    renderTimeline();
+    openStealPanel();
+    syncState();
   };
   return slot;
 }
@@ -304,29 +512,172 @@ function makeCardEl(card) {
   return el;
 }
 
-function addPendingCardToTimeline() {
-  renderTimeline();
-  const tl = document.getElementById('timeline');
-  const pendingEl = document.createElement('div');
-  pendingEl.className = 'card hidden pending';
-  pendingEl.draggable = true;
-  pendingEl.id = 'pendingCard';
-  pendingEl.ondragstart = (e) => { e.dataTransfer.setData('text/plain','pending'); pendingEl.classList.add('dragging'); };
-  pendingEl.ondragend = () => pendingEl.classList.remove('dragging');
-  tl.insertBefore(pendingEl, tl.firstChild);
+function makePendingCardEl() {
+  const el = document.createElement('div');
+  el.className = 'card hidden pending';
+  return el;
 }
 
-function highlightPendingSlot(slot) {
-  document.querySelectorAll('.slot').forEach(s => s.classList.remove('dragover'));
-  document.getElementById('npLabel').textContent = `📍 Karte platziert bei Position ${slot.dataset.index}. Klicke "Auflösen"!`;
+function openStealPanel(){
+  if(players.length <= 1) { doReveal(); return; }
+  stealMode = 'waiting';
+  stealingPlayerIndex = null;
+  stealPendingIndex = null;
+  const activeName = players[currentTurn].name;
+  document.getElementById('activePlayerName').textContent = activeName;
+  document.getElementById('stealPlacementArea').classList.add('hidden-section');
+  document.getElementById('stealResolveArea').classList.add('hidden-section');
+  document.getElementById('noStealArea').classList.remove('hidden-section');
+  const bw = document.getElementById('stealPlayerButtons');
+  bw.innerHTML = '';
+  players.forEach((p, idx) => {
+    if (idx === currentTurn) return;
+    const btn = document.createElement('button');
+    btn.className = 'steal';
+    btn.textContent = '🃏 ' + p.name + ' klaut!';
+    btn.onclick = (i => () => startStealing(i))(idx);
+    bw.appendChild(btn);
+  });
+  document.getElementById('stealPanel').classList.remove('hidden-section');
+  syncState();
 }
 
-document.getElementById('revealBtn').onclick = () => {
-  if (pendingIndex === null) {
-    alert('Zieh die geheime Karte erst per Drag & Drop an eine Stelle in der Timeline!');
-    return;
+function startStealing(playerIdx) {
+  stealMode = 'placing';
+  stealingPlayerIndex = playerIdx;
+  stealPendingIndex = null;
+  document.getElementById('stealingPlayerName').textContent = players[playerIdx].name;
+  document.getElementById('stealPlayerButtons').classList.add('hidden-section');
+  document.getElementById('noStealArea').classList.add('hidden-section');
+  document.getElementById('stealPlacementArea').classList.remove('hidden-section');
+  document.getElementById('stealReadyBtn').disabled = true;
+  document.getElementById('stealResolveArea').classList.remove('hidden-section');
+  renderStealTimeline();
+  syncState();
+}
+
+function renderStealTimeline() {
+  const tl = document.getElementById('stealTimeline');
+  tl.innerHTML = '';
+  if (stealingPlayerIndex === null) return;
+  const sorted = [...players[currentTurn].timeline].sort((a,b) => a.year - b.year);
+  if (stealPendingIndex === null) tl.appendChild(makeStealPendingCardEl());
+  if (stealPendingIndex === 0) tl.appendChild(makeStealPendingCardEl());
+  tl.appendChild(makeStealSlot(0));
+  sorted.forEach((card, i) => {
+    const el = document.createElement('div');
+    el.className = 'stealCard';
+    el.innerHTML = `<div class="year">${card.year}</div><div class="title">${card.title}</div><div class="artist">${card.artist}</div>`;
+    tl.appendChild(el);
+    const si = i + 1;
+    if (stealPendingIndex === si) tl.appendChild(makeStealPendingCardEl());
+    tl.appendChild(makeStealSlot(si));
+  });
+}
+
+function makeStealSlot(index) {
+  const slot = document.createElement('div');
+  slot.className = 'stealSlot' + (stealPendingIndex === index ? ' selected' : '');
+  slot.dataset.index = index;
+  const line = document.createElement('div');
+  line.className = 'dropline';
+  line.textContent = 'Hier';
+  slot.appendChild(line);
+  slot.onclick = (i => () => {
+    stealPendingIndex = i;
+    document.getElementById('stealReadyBtn').disabled = false;
+    renderStealTimeline();
+    syncState();
+  })(index);
+  return slot;
+}
+
+function makeStealPendingCardEl() {
+  const el = document.createElement('div');
+  el.className = 'stealCard hidden pending';
+  return el;
+}
+
+function cancelStealing() {
+  stealMode = 'waiting';
+  stealingPlayerIndex = null;
+  stealPendingIndex = null;
+  document.getElementById('stealPlacementArea').classList.add('hidden-section');
+  document.getElementById('stealResolveArea').classList.add('hidden-section');
+  document.getElementById('stealPlayerButtons').classList.remove('hidden-section');
+  document.getElementById('noStealArea').classList.remove('hidden-section');
+  syncState();
+}
+
+document.getElementById('stealReadyBtn').onclick = () => resolveWithSteal();
+document.getElementById('stealCancelBtn').onclick = () => cancelStealing();
+document.getElementById('noStealRevealBtn').onclick = () => {
+  stealMode = false;
+  stealingPlayerIndex = null;
+  stealPendingIndex = null;
+  document.getElementById('stealPanel').classList.add('hidden-section');
+  doReveal();
+};
+
+function resolveWithSteal() {
+  if (pendingIndex == null || stealPendingIndex == null || stealingPlayerIndex == null) return;
+  
+  const aS = [...players[currentTurn].timeline].sort((a,b) => a.year - b.year).map(c => c.year);
+  const aL = pendingIndex > 0 ? aS[pendingIndex-1] : -Infinity;
+  const aU = pendingIndex < aS.length ? aS[pendingIndex] : Infinity;
+  const activeCorrect = pendingSong.year >= aL && pendingSong.year <= aU;
+  
+  const sL = stealPendingIndex > 0 ? aS[stealPendingIndex-1] : -Infinity;
+  const sU = stealPendingIndex < aS.length ? aS[stealPendingIndex] : Infinity;
+  const stealCorrect = pendingSong.year >= sL && pendingSong.year <= sU;
+  
+  const banner = document.getElementById('resultBanner');
+  const song = pendingSong;
+  const si = stealingPlayerIndex;
+
+  if (activeCorrect && stealCorrect) {
+    players[currentTurn].score++;
+    players[currentTurn].timeline.push(song);
+    banner.className = 'show ok';
+    banner.textContent = `Beide richtig! "${song.title}" (${song.year}) – ${players[currentTurn].name} behält (Heimvorteil).`;
+  } else if (activeCorrect && !stealCorrect) {
+    players[currentTurn].score++;
+    players[currentTurn].timeline.push(song);
+    banner.className = 'show ok';
+    banner.textContent = `${players[currentTurn].name} richtig, ${players[si].name} falsch!`;
+  } else if (!activeCorrect && stealCorrect) {
+    players[si].score++;
+    players[si].timeline.push(song);
+    banner.className = 'show bad';
+    banner.textContent = `🃏 Geklaut! "${song.title}" geht an ${players[si].name}!`;
+  } else {
+    banner.className = 'show bad';
+    banner.textContent = `Beide falsch! Abgeworfen.`;
   }
-  const sortedYears = [...placedCards].sort((a,b) => a.year - b.year).map(c => c.year);
+
+  pendingSong = null;
+  pendingIndex = null;
+  stealMode = false;
+  stealingPlayerIndex = null;
+  stealPendingIndex = null;
+  document.getElementById('stealPanel').classList.add('hidden-section');
+  renderScoreboard();
+  renderTimeline();
+  document.getElementById('revealBtn').disabled = true;
+  document.getElementById('nextTurnBtn').disabled = false;
+  syncState();
+
+  if (players[currentTurn].score >= winTarget) {
+    setTimeout(() => showWinner(players[currentTurn]), 600);
+  } else if (stealCorrect && !activeCorrect && players[si].score >= winTarget) {
+    setTimeout(() => showWinner(players[si]), 600);
+  }
+}
+
+function doReveal() {
+  if (pendingIndex === null) { alert('Klick auf einen Slot!'); return; }
+  
+  const sortedYears = [...players[currentTurn].timeline].sort((a,b) => a.year - b.year).map(c => c.year);
   const lower = pendingIndex > 0 ? sortedYears[pendingIndex-1] : -Infinity;
   const upper = pendingIndex < sortedYears.length ? sortedYears[pendingIndex] : Infinity;
   const correct = pendingSong.year >= lower && pendingSong.year <= upper;
@@ -335,40 +686,74 @@ document.getElementById('revealBtn').onclick = () => {
   banner.classList.add('show');
   if (correct) {
     banner.className = 'show ok';
-    banner.textContent = `✅ Richtig! ${pendingSong.title} (${pendingSong.artist}) ist von ${pendingSong.year}. ${players[currentTurn].name} bekommt die Karte!`;
+    banner.textContent = `✅ Richtig! "${pendingSong.title}" (${pendingSong.year})`;
     players[currentTurn].score++;
   } else {
     banner.className = 'show bad';
-    banner.textContent = `❌ Leider falsch. ${pendingSong.title} (${pendingSong.artist}) ist von ${pendingSong.year}.`;
+    banner.textContent = `❌ Falsch. "${pendingSong.title}" ist von ${pendingSong.year}`;
   }
-  placedCards.push(pendingSong);
+  
+  players[currentTurn].timeline.push(pendingSong);
+  pendingSong = null;
+  pendingIndex = null;
   renderScoreboard();
   renderTimeline();
-  document.getElementById('npLabel').textContent = correct ? '🎉 Karte gewonnen!' : '😅 Nächster ist dran.';
   document.getElementById('revealBtn').disabled = true;
   document.getElementById('nextTurnBtn').disabled = false;
+  syncState();
 
   if (players[currentTurn].score >= winTarget) {
     setTimeout(() => showWinner(players[currentTurn]), 600);
   }
-};
+}
+
+document.getElementById('revealBtn').onclick = () => doReveal();
 
 document.getElementById('nextTurnBtn').onclick = () => {
   currentTurn = (currentTurn + 1) % players.length;
-  pendingSong = null; pendingIndex = null; currentPreviewUrl = null;
+  pendingSong = null;
+  pendingIndex = null;
+  stealMode = false;
+  stealingPlayerIndex = null;
+  stealPendingIndex = null;
   document.getElementById('audioArea').innerHTML = '';
-  document.getElementById('npLabel').textContent = `${players[currentTurn].name} ist dran. Klick "Nächsten Song ziehen"!`;
+  document.getElementById('npLabel').textContent = `${players[currentTurn].name} ist dran!`;
   document.getElementById('resultBanner').className = '';
   document.getElementById('drawBtn').disabled = false;
   document.getElementById('nextTurnBtn').disabled = true;
+  document.getElementById('stealPanel').classList.add('hidden-section');
   renderScoreboard();
+  syncState();
 };
+
+function syncState() {
+  if (gameMode === 'host') {
+    const state = {
+      roomCode, players, currentTurn, deck: deck.length, pendingSong, pendingIndex,
+      stealMode, stealingPlayerIndex, stealPendingIndex, winTarget
+    };
+    localStorage.setItem('ballermann_' + roomCode, JSON.stringify(state));
+  }
+}
 
 function showWinner(p) {
   document.getElementById('game').classList.add('hidden-section');
   document.getElementById('winnerBox').classList.remove('hidden-section');
-  document.getElementById('winnerText').textContent = `🏆 ${p.name} gewinnt mit ${p.score} Karten! Prost! 🍻`;
+  document.getElementById('winnerText').textContent = `🏆 ${p.name} gewinnt! 🍻`;
 }
+
+document.getElementById('restartBtn').onclick = () => {
+  location.reload();
+};
+
+// Zeige Join-Panel wenn am Anfang
+window.addEventListener('load', () => {
+  document.getElementById('joinPanel').classList.remove('hidden-section');
+  
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+});
 </script>
 </body>
 </html>
