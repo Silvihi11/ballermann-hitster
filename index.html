@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Ballermann-Hitster</title>
+<style>
+  :root { --card-bg: #ffde59; --card-text: #1a1a1a; --accent: #ff5757; --accent2: #2ec4b6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: radial-gradient(circle at top, #14324d, #071019 80%); color: white; min-height: 100vh; padding: 20px; }
+  h1 { text-align: center; font-size: 1.8em; margin-bottom: 4px; color: #ffde59; text-shadow: 0 0 12px rgba(255,222,89,0.5); }
+  .subtitle { text-align:center; opacity:0.75; margin-bottom: 20px; font-size:0.9em;}
+  #setup, #game { max-width: 900px; margin: 0 auto; }
+  .panel { background: rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; margin-bottom: 16px; backdrop-filter: blur(4px); }
+  label { display:block; margin: 10px 0 4px; font-weight:600; }
+  input[type=text], input[type=number], select { width: 100%; padding: 8px 10px; border-radius: 8px; border: none; font-size: 1em; }
+  .playerRow { display:flex; gap:8px; margin-bottom:6px; }
+  .playerRow input { flex:1; }
+  button { cursor: pointer; border: none; border-radius: 10px; padding: 10px 18px; font-size: 1em; font-weight: 700; background: var(--accent2); color: #06282a; transition: transform 0.15s ease, filter 0.15s ease; }
+  button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  button.secondary { background: #ffde59; color:#3a2b00; }
+  button.danger { background: var(--accent); color:white; }
+  button:disabled { opacity: 0.4; cursor:not-allowed; transform:none; }
+  #scoreboard { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom: 14px; }
+  .playerBadge { padding: 8px 14px; border-radius: 30px; background: rgba(255,255,255,0.08); font-weight:600; border: 2px solid transparent; }
+  .playerBadge.active { border-color:#ffde59; background: rgba(255,222,89,0.18); }
+  .playerBadge .count { color:#2ec4b6; margin-left:6px; }
+  #controls { display:flex; justify-content:center; gap:12px; margin-bottom: 18px; flex-wrap:wrap; }
+  #deckCount { text-align:center; opacity:0.6; font-size:0.85em; margin-bottom:10px; }
+  #timelineWrap { overflow-x: auto; padding: 20px 10px 30px; background: rgba(0,0,0,0.25); border-radius: 16px; }
+  #timeline { display:flex; align-items:center; min-height: 150px; width: max-content; padding: 0 20px; }
+  .slot { width: 26px; min-width: 26px; height: 130px; display:flex; align-items:center; justify-content:center; position: relative; }
+  .slot .dropline { width: 4px; height: 100%; background: rgba(255,255,255,0.12); border-radius: 4px; transition: background 0.15s, width 0.15s; }
+  .slot.dragover .dropline { background: #ffde59; width: 8px; box-shadow: 0 0 12px #ffde59; }
+  .card { width: 110px; height: 130px; background: linear-gradient(160deg, var(--card-bg), #ffb703); color: var(--card-text); border-radius: 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; box-shadow: 0 6px 14px rgba(0,0,0,0.4); cursor: grab; flex-shrink:0; position: relative; user-select:none; }
+  .card .year { font-size: 1.6em; font-weight:800; }
+  .card .title { font-size: 0.65em; font-weight:600; margin-top:4px; line-height:1.1; }
+  .card .artist { font-size: 0.58em; opacity:0.75; }
+  .card.hidden .year, .card.hidden .title, .card.hidden .artist { visibility: hidden; }
+  .card.hidden::after { content: "?"; position:absolute; font-size: 2.4em; font-weight:900; color: rgba(0,0,0,0.35); }
+  .card.pending { outline: 3px dashed #ff5757; animation: pulse 1.2s infinite; }
+  .card.dragging { opacity: 0.3; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 rgba(255,87,87,0.6);} 50%{box-shadow:0 0 18px rgba(255,87,87,0.9);} }
+  #nowPlaying { text-align:center; margin-bottom: 14px; font-size:1.1em; }
+  #nowPlaying .hint { opacity:0.6; font-size:0.85em; }
+  #audioPlayer { width: 100%; margin: 10px 0; }
+  .noPreviewMsg { padding:14px; background:rgba(255,87,87,0.15); border-radius:10px; color:#ffb3b3; text-align:center; }
+  #resultBanner { text-align:center; padding: 10px; border-radius:10px; font-weight:700; margin-bottom:10px; display:none; }
+  #resultBanner.show { display:block; }
+  #resultBanner.ok { background: rgba(46,196,182,0.25); color:#2ec4b6; }
+  #resultBanner.bad { background: rgba(255,87,87,0.25); color:#ff5757; }
+  #winnerBox { text-align:center; }
+  #winnerBox h2 { color:#ffde59; }
+  footer { text-align:center; opacity:0.4; font-size:0.75em; margin-top:30px; }
+  .hidden-section { display:none; }
+  .loadingSpinner { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid #ffde59; border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<h1>Ballermann-Hitster</h1>
+<div class="subtitle">iTunes-Preview Edition · Hotseat · Timeline-Kartenspiel</div>
+
+<!-- PLAYER SETUP -->
+<div id="setup">
+  <div class="panel">
+    <h3>Spieler</h3>
+    <div id="playerInputs"></div>
+    <button class="secondary" id="addPlayerBtn">+ Spieler</button>
+  </div>
+  <div class="panel">
+    <h3>Einstellungen</h3>
+    <label>Karten zum Sieg</label>
+    <input type="number" id="winTarget" value="10" min="3" max="44">
+  </div>
+  <div style="text-align:center;">
+    <button id="startBtn">Spiel starten</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="hidden-section">
+  <div id="scoreboard"></div>
+  <div id="resultBanner"></div>
+  <div id="nowPlaying" class="panel">
+    <div id="npLabel">Bereit?</div>
+    <div id="audioArea"></div>
+    <div class="hint">Song abspielen, dann die geheime Karte per Drag & Drop an die richtige Stelle in der Timeline ziehen.</div>
+  </div>
+  <div id="deckCount"></div>
+  <div id="controls">
+    <button id="drawBtn">🎵 Nächsten Song ziehen</button>
+    <button id="revealBtn" disabled>✅ Auflösen</button>
+    <button id="nextTurnBtn" disabled>➡️ Nächster Spieler</button>
+  </div>
+  <div id="timelineWrap">
+    <div id="timeline"></div>
+  </div>
+</div>
+
+<div id="winnerBox" class="panel hidden-section">
+  <h2 id="winnerText"></h2>
+  <button id="restartBtn">🔁 Neues Spiel</button>
+</div>
+
+<footer>Rein privates Fanprojekt, inspiriert von Hitster. Kein offizielles Produkt. Musik via iTunes-API.</footer>
+
+<script>
+const SONGS = [
+  {title:"SOS", artist:"Julian Sommer", year:2025},
+  {title:"Wackelkontakt", artist:"Oimara", year:2024},
+  {title:"Helikopter 117", artist:"Tobee", year:2017},
+  {title:"Anna-Lena", artist:"Honk! feat. Deejay Matze", year:2019},
+  {title:"Der Zug hat keine Bremse", artist:"Mia Julia & Lorenz Büffel", year:2022},
+  {title:"Ich bin morgens immer müde", artist:"Peter Wackel", year:2022},
+  {title:"Inselverbot", artist:"Tim Toupet", year:2018},
+  {title:"Saufi Saufi", artist:"Tobee", year:2019},
+  {title:"Die Nacht von Freitag auf Montag", artist:"Peter Wackel", year:2015},
+  {title:"Lotusblume", artist:"Tobee", year:2011},
+  {title:"Auffe aufn Berg", artist:"Jägermeister DJ Alex & Matty Valentino", year:2016},
+  {title:"Scheiß drauf (Malle ist nur einmal im Jahr)", artist:"Peter Wackel", year:2013},
+  {title:"Aua im Kopf", artist:"Tobee", year:2016},
+  {title:"Dicht im Flieger", artist:"Julian Sommer", year:2022},
+  {title:"Inselfieber", artist:"Peter Wackel", year:2023},
+  {title:"Schnelle Brille", artist:"Nancy Franck", year:2023},
+  {title:"Ich schwanke noch", artist:"Ikke Hüftgold", year:2021},
+  {title:"Engel", artist:"Ikke Hüftgold", year:2023},
+  {title:"Bella Napoli", artist:"Tobee", year:2024},
+  {title:"Auf zum Ballermann", artist:"Ballermann Party-Hit", year:2018},
+  {title:"Mozart (Ciao Niveau)", artist:"Tobee", year:2024},
+  {title:"Handwerker", artist:"Mickie Krause & Julian Sommer", year:2022},
+  {title:"Lampen an", artist:"Frenzy", year:2023},
+  {title:"Mon Amour", artist:"Ballermann Party-Hit", year:2025},
+  {title:"Delfin", artist:"Isi Glück", year:2025},
+  {title:"Blödsinn", artist:"LUNAX & Isi Glück", year:2025},
+  {title:"Babybell", artist:"Breitner", year:2024},
+  {title:"Bring mich nach Hause", artist:"Mia Julia", year:2023},
+  {title:"Eine Woche wach", artist:"Mickie Krause", year:2019},
+  {title:"Bumsbar", artist:"Ikke Hüftgold feat. DJ Robin & Schürze", year:2023},
+  {title:"Peter Pan", artist:"Mia Julia & Julian Sommer", year:2023},
+  {title:"Layla", artist:"DJ Robin & Schürze", year:2022},
+  {title:"Liebe auf der Rückbank", artist:"Ballermann Party-Hit", year:2023},
+  {title:"Oh Baby", artist:"Mia Julia", year:2013},
+  {title:"Endlich wieder Malle", artist:"Ballermann Party-Hit", year:2017},
+  {title:"Malle is Liebe", artist:"Kreisligalegende", year:2024},
+  {title:"Bierkapitän", artist:"Ballermann Party-Hit", year:2018},
+  {title:"Saufen - morgens, mittags, abends", artist:"Ingo ohne Flamingo", year:2017},
+  {title:"Midnight Lady", artist:"Chris Norman", year:1986},
+  {title:"Johnny Däpp", artist:"Lorenz Büffel", year:2016},
+  {title:"Senorita (Torero)", artist:"Almklausi", year:2020},
+  {title:"M.I.A. meine Gang", artist:"Mia Julia", year:2017},
+  {title:"3er", artist:"Frenzy", year:2025},
+  {title:"Baila Baila", artist:"Mickie Krause, Lorenz Büffel, Kings of Günter & Immer Hansi", year:2025},
+];
+
+let players = [];
+let winTarget = 10;
+let deck = [];
+let currentTurn = 0;
+let placedCards = [];
+let pendingSong = null;
+let pendingIndex = null;
+let currentPreviewUrl = null;
+
+const playerInputs = document.getElementById('playerInputs');
+function addPlayerRow(name) {
+  const row = document.createElement('div');
+  row.className = 'playerRow';
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.placeholder = 'Spielername';
+  inp.value = name || '';
+  const rm = document.createElement('button');
+  rm.textContent = 'X';
+  rm.className = 'danger';
+  rm.onclick = () => row.remove();
+  row.appendChild(inp);
+  row.appendChild(rm);
+  playerInputs.appendChild(row);
+}
+addPlayerRow('Spieler 1');
+addPlayerRow('Spieler 2');
+document.getElementById('addPlayerBtn').onclick = () => addPlayerRow('');
+
+document.getElementById('startBtn').onclick = () => {
+  const names = [...playerInputs.querySelectorAll('input')].map(i => i.value.trim()).filter(Boolean);
+  if (names.length < 1) { alert('Bitte mindestens einen Spielernamen eingeben.'); return; }
+  players = names.map(n => ({name:n, score:0}));
+  winTarget = Math.min(parseInt(document.getElementById('winTarget').value) || 10, SONGS.length);
+  deck = shuffle([...SONGS]);
+  currentTurn = 0;
+  placedCards = [];
+  document.getElementById('setup').classList.add('hidden-section');
+  document.getElementById('game').classList.remove('hidden-section');
+  renderScoreboard();
+  renderTimeline();
+  updateDeckCount();
+};
+
+document.getElementById('restartBtn').onclick = () => {
+  document.getElementById('winnerBox').classList.add('hidden-section');
+  document.getElementById('setup').classList.remove('hidden-section');
+};
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i=a.length-1;i>0;i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function updateDeckCount() {
+  document.getElementById('deckCount').textContent = `🎴 Noch ${deck.length} Songs im Stapel`;
+}
+
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  players.forEach((p, idx) => {
+    const b = document.createElement('div');
+    b.className = 'playerBadge' + (idx===currentTurn ? ' active' : '');
+    b.innerHTML = `${p.name} <span class="count">${p.score}/${winTarget}</span>`;
+    sb.appendChild(b);
+  });
+}
+
+async function searchItunesPreview(title, artist) {
+  const query = encodeURIComponent(title + ' ' + artist);
+  try {
+    const res = await fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`);
+    const data = await res.json();
+    if (data.results && data.results[0] && data.results[0].previewUrl) {
+      return data.results[0].previewUrl;
+    }
+    return null;
+  } catch(e) {
+    console.error('iTunes API error:', e);
+    return null;
+  }
+}
+
+document.getElementById('drawBtn').onclick = async () => {
+  if (deck.length === 0) { alert('Keine Songs mehr im Stapel! Spiel endet hier.'); return; }
+  pendingSong = deck.pop();
+  pendingIndex = null;
+  updateDeckCount();
+  document.getElementById('npLabel').textContent = `🎧 ${players[currentTurn].name} ist dran – Suche Song...`;
+  document.getElementById('resultBanner').className = '';
+  document.getElementById('resultBanner').textContent = '';
+  document.getElementById('drawBtn').disabled = true;
+  document.getElementById('revealBtn').disabled = false;
+  document.getElementById('nextTurnBtn').disabled = true;
+
+  const audioArea = document.getElementById('audioArea');
+  audioArea.innerHTML = '<div class="loadingSpinner"></div> Suche iTunes-Vorschau...';
+
+  const previewUrl = await searchItunesPreview(pendingSong.title, pendingSong.artist);
+  currentPreviewUrl = previewUrl;
+
+  if (previewUrl) {
+    audioArea.innerHTML = `<audio id="previewAudio" controls autoplay src="${previewUrl}"></audio>`;
+  } else {
+    audioArea.innerHTML = `<div class="noPreviewMsg">Keine iTunes-Vorschau gefunden für "${pendingSong.title}". Bitte selbst summen 🎤 oder auf YouTube suchen.</div>`;
+  }
+
+  addPendingCardToTimeline();
+};
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+  const sorted = [...placedCards].sort((a,b) => a.year - b.year);
+  tl.appendChild(makeSlot(0));
+  sorted.forEach((card, i) => {
+    tl.appendChild(makeCardEl(card));
+    tl.appendChild(makeSlot(i+1));
+  });
+}
+
+function makeSlot(index) {
+  const slot = document.createElement('div');
+  slot.className = 'slot';
+  slot.dataset.index = index;
+  const line = document.createElement('div');
+  line.className = 'dropline';
+  slot.appendChild(line);
+  slot.ondragover = (e) => { e.preventDefault(); slot.classList.add('dragover'); };
+  slot.ondragleave = () => slot.classList.remove('dragover');
+  slot.ondrop = (e) => {
+    e.preventDefault();
+    slot.classList.remove('dragover');
+    pendingIndex = parseInt(slot.dataset.index);
+    highlightPendingSlot(slot);
+  };
+  return slot;
+}
+
+function makeCardEl(card) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.innerHTML = `<div class="year">${card.year}</div><div class="title">${card.title}</div><div class="artist">${card.artist}</div>`;
+  return el;
+}
+
+function addPendingCardToTimeline() {
+  renderTimeline();
+  const tl = document.getElementById('timeline');
+  const pendingEl = document.createElement('div');
+  pendingEl.className = 'card hidden pending';
+  pendingEl.draggable = true;
+  pendingEl.id = 'pendingCard';
+  pendingEl.ondragstart = (e) => { e.dataTransfer.setData('text/plain','pending'); pendingEl.classList.add('dragging'); };
+  pendingEl.ondragend = () => pendingEl.classList.remove('dragging');
+  tl.insertBefore(pendingEl, tl.firstChild);
+}
+
+function highlightPendingSlot(slot) {
+  document.querySelectorAll('.slot').forEach(s => s.classList.remove('dragover'));
+  document.getElementById('npLabel').textContent = `📍 Karte platziert bei Position ${slot.dataset.index}. Klicke "Auflösen"!`;
+}
+
+document.getElementById('revealBtn').onclick = () => {
+  if (pendingIndex === null) {
+    alert('Zieh die geheime Karte erst per Drag & Drop an eine Stelle in der Timeline!');
+    return;
+  }
+  const sortedYears = [...placedCards].sort((a,b) => a.year - b.year).map(c => c.year);
+  const lower = pendingIndex > 0 ? sortedYears[pendingIndex-1] : -Infinity;
+  const upper = pendingIndex < sortedYears.length ? sortedYears[pendingIndex] : Infinity;
+  const correct = pendingSong.year >= lower && pendingSong.year <= upper;
+
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('show');
+  if (correct) {
+    banner.className = 'show ok';
+    banner.textContent = `✅ Richtig! ${pendingSong.title} (${pendingSong.artist}) ist von ${pendingSong.year}. ${players[currentTurn].name} bekommt die Karte!`;
+    players[currentTurn].score++;
+  } else {
+    banner.className = 'show bad';
+    banner.textContent = `❌ Leider falsch. ${pendingSong.title} (${pendingSong.artist}) ist von ${pendingSong.year}.`;
+  }
+  placedCards.push(pendingSong);
+  renderScoreboard();
+  renderTimeline();
+  document.getElementById('npLabel').textContent = correct ? '🎉 Karte gewonnen!' : '😅 Nächster ist dran.';
+  document.getElementById('revealBtn').disabled = true;
+  document.getElementById('nextTurnBtn').disabled = false;
+
+  if (players[currentTurn].score >= winTarget) {
+    setTimeout(() => showWinner(players[currentTurn]), 600);
+  }
+};
+
+document.getElementById('nextTurnBtn').onclick = () => {
+  currentTurn = (currentTurn + 1) % players.length;
+  pendingSong = null; pendingIndex = null; currentPreviewUrl = null;
+  document.getElementById('audioArea').innerHTML = '';
+  document.getElementById('npLabel').textContent = `${players[currentTurn].name} ist dran. Klick "Nächsten Song ziehen"!`;
+  document.getElementById('resultBanner').className = '';
+  document.getElementById('drawBtn').disabled = false;
+  document.getElementById('nextTurnBtn').disabled = true;
+  renderScoreboard();
+};
+
+function showWinner(p) {
+  document.getElementById('game').classList.add('hidden-section');
+  document.getElementById('winnerBox').classList.remove('hidden-section');
+  document.getElementById('winnerText').textContent = `🏆 ${p.name} gewinnt mit ${p.score} Karten! Prost! 🍻`;
+}
+</script>
+</body>
+</html>
