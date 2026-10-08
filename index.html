@@ -471,6 +471,92 @@ function renderScoreboard() {
   });
 }
 
+// Audio-Generator für Ballermann-Sounds
+class BallermanAudioGenerator {
+  constructor() {
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  playOomPahPah() {
+    const ctx = this.audioContext;
+    const now = ctx.currentTime;
+    
+    // Oom (tiefe Note)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.frequency.value = 80;
+    osc1.type = 'sine';
+    gain1.gain.setValueAtTime(0.3, now);
+    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+    osc1.start(now);
+    osc1.stop(now + 0.2);
+    
+    // Pah (höhere Note)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.frequency.value = 200;
+    osc2.type = 'sine';
+    gain2.gain.setValueAtTime(0.2, now + 0.25);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    osc2.start(now + 0.25);
+    osc2.stop(now + 0.4);
+    
+    // Pah (nochmal)
+    const osc3 = ctx.createOscillator();
+    const gain3 = ctx.createGain();
+    osc3.connect(gain3);
+    gain3.connect(ctx.destination);
+    osc3.frequency.value = 180;
+    osc3.type = 'sine';
+    gain3.gain.setValueAtTime(0.2, now + 0.5);
+    gain3.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
+    osc3.start(now + 0.5);
+    osc3.stop(now + 0.65);
+  }
+
+  playFanfare() {
+    const notes = [
+      {freq: 262, duration: 0.2},
+      {freq: 330, duration: 0.2},
+      {freq: 392, duration: 0.2},
+      {freq: 523, duration: 0.3},
+      {freq: 392, duration: 0.2},
+      {freq: 330, duration: 0.2},
+      {freq: 262, duration: 0.3},
+    ];
+    
+    let delay = 0;
+    notes.forEach(note => {
+      setTimeout(() => {
+        const ctx = this.audioContext;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = note.freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + note.duration);
+        osc.start(now);
+        osc.stop(now + note.duration);
+      }, delay * 1000);
+      delay += note.duration + 0.05;
+    });
+  }
+
+  playRandom() {
+    const melodies = [this.playOomPahPah.bind(this), this.playFanfare.bind(this)];
+    melodies[Math.floor(Math.random() * melodies.length)]();
+  }
+}
+
+const audioGenerator = new BallermanAudioGenerator();
+
 async function searchItunesPreview(title, artist) {
   const query = encodeURIComponent(title + ' ' + artist);
   try {
@@ -508,7 +594,17 @@ document.getElementById('drawBtn').onclick = async () => {
   if (previewUrl) {
     audioArea.innerHTML = `<audio controls autoplay src="${previewUrl}"></audio>`;
   } else {
-    audioArea.innerHTML = `<div style="padding:14px; background:rgba(255,87,87,0.15); border-radius:10px; color:#ffb3b3; text-align:center; font-size:0.9em;">Keine iTunes-Vorschau für "${pendingSong.title}" – selbst summen! 🎤</div>`;
+    audioArea.innerHTML = `
+      <div style="padding:20px; text-align:center;">
+        <button onclick="audioGenerator.playRandom(); audioGenerator.playRandom();" 
+                style="background: #ffde59; color: #1a1a1a; padding: 20px 40px; font-size: 1.2em; border-radius: 12px; border: none; cursor: pointer; font-weight: bold;">
+          🎺 Ballermann-Sound abspielen!
+        </button>
+        <div style="margin-top: 12px; font-size: 0.9em; opacity: 0.8;">
+          ${pendingSong.title} - ${pendingSong.artist} (${pendingSong.year})
+        </div>
+      </div>
+    `;
   }
 
   renderTimeline();
